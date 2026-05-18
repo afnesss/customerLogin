@@ -1,9 +1,9 @@
 import axios from "axios";
-import { api } from "./clientConfig";
+import { api, getCookie } from "./clientConfig";
 
 type LoginPayload = {
-  user_external_application_id: string;
-  login: string;
+  login_type: string;
+  login_value: string;
   password: string;
 };
 
@@ -23,17 +23,22 @@ export class UserLoginError extends Error {
 
 export const userLogin = async (login: string, password: string) => {
   const payload: LoginPayload = {
-    user_external_application_id: import.meta.env.VITE_EXTERNAL_APP_ID,
-    login,
+    login_type: "email",
+    login_value: login,
     password,
   };
+  const token = getCookie("carecloud_token");
 
   try {
-    const res = await api.post<LoginResponse>("/users/actions/login", payload, {
-      headers: {
-        Accept: "application/json",
+    const res = await api.post<LoginResponse>(
+      `/tokens/${token}/actions/login`,
+      payload,
+      {
+        headers: {
+          Accept: "application/json",
+        },
       },
-    });
+    );
     console.log(res.data);
     return res.data;
   } catch (error) {
