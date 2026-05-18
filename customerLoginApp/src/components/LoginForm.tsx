@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { Alert, Button, Form, Input } from "antd";
+import { useNavigate } from "react-router-dom";
 import { UserLoginError, userLogin } from "../api/loginQuery";
 
-const LoginForm = () => {
+type LoginFormProps = {
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const LoginForm = ({ setIsLoggedIn }: LoginFormProps) => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleSubmit = async (values: { email: string; password: string }) => {
     try {
@@ -13,7 +19,9 @@ const LoginForm = () => {
       setSubmitError(null);
 
       const response = await userLogin(values.email, values.password);
-      console.log("user login success", response);
+      localStorage.setItem("auth_user", JSON.stringify(response));
+      setIsLoggedIn(true);
+      navigate("/profile", { replace: true });
     } catch (error) {
       if (error instanceof UserLoginError) {
         setSubmitError(error.message);
