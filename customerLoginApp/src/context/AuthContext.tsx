@@ -7,6 +7,7 @@ import {
 } from "react";
 import type { User } from "../api/getUserData";
 import { getCookie } from "../api/clientConfig";
+import { logoutQuery } from "../api/logoutQuery";
 import { createTokenId } from "../api/tokenQuery";
 import { getUserData } from "../api/getUserData";
 
@@ -15,7 +16,7 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   isBootstrapping: boolean;
   setUser: (user: User | null) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 };
 
@@ -30,7 +31,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.data.customers[0] ?? null);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await logoutQuery();
+    } catch {
+      // error
+    }
+
     setUser(null);
     localStorage.removeItem("auth_user");
     document.cookie =
