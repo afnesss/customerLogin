@@ -93,28 +93,23 @@ const ProfilePage = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col items-start gap-3 sm:items-end">
-                <div className="inline-flex w-fit rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
-                  State: {state}
-                </div>
-                <div className="flex flex-wrap justify-end gap-2">
-                  <Button
-                    type="default"
-                    icon={<Pencil size={16} />}
-                    className="h-11! rounded-2xl! border-slate-200! bg-white! px-4! font-medium! text-slate-700! shadow-none!"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    type="primary"
-                    danger
-                    icon={<LogOut size={16} />}
-                    onClick={handleLogout}
-                    className="h-11! rounded-2xl! border-0! bg-slate-950! px-4! font-semibold! text-white! hover:bg-rose-700!"
-                  >
-                    Logout
-                  </Button>
-                </div>
+              <div className="flex flex-wrap justify-end gap-2 self-start sm:self-auto">
+                <Button
+                  type="default"
+                  icon={<Pencil size={16} />}
+                  className="h-11! rounded-2xl! border-slate-200! bg-white! px-4! font-medium! text-slate-700! shadow-none!"
+                >
+                  Edit
+                </Button>
+                <Button
+                  type="primary"
+                  danger
+                  icon={<LogOut size={16} />}
+                  onClick={handleLogout}
+                  className="h-11! rounded-2xl! border-0! bg-slate-950! px-4! font-semibold! text-white! hover:bg-rose-700!"
+                >
+                  Logout
+                </Button>
               </div>
             </div>
 
@@ -138,13 +133,18 @@ const ProfilePage = () => {
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
           <section className="rounded-3xl border border-white/70 bg-white/90 p-5 shadow-[0_20px_70px_rgba(15,23,42,0.14)] backdrop-blur md:p-6">
-            <div className="flex flex-col gap-1">
-              <h2 className="text-lg font-semibold text-slate-950">
-                Personal Information
-              </h2>
-              <p className="text-sm text-slate-500">
-                Primary customer details first. System identifiers stay secondary.
-              </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-col gap-1">
+                <h2 className="text-lg font-semibold text-slate-950">
+                  Personal Information
+                </h2>
+                <p className="text-sm text-slate-500">
+                  Primary customer details first. System identifiers stay secondary.
+                </p>
+              </div>
+              <div className="inline-flex w-fit rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
+                State: {state}
+              </div>
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
