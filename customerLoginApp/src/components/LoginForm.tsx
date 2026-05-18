@@ -1,12 +1,15 @@
 import { Alert, Button, Form, Input } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getCookie } from "../api/clientConfig";
 import { UserLoginError, userLogin } from "../api/loginQuery";
+import { createTokenId } from "../api/tokenQuery";
 import { useAuth } from "../context/AuthContext";
 
 const LoginForm = () => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPreparingToken, setIsPreparingToken] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
@@ -15,6 +18,15 @@ const LoginForm = () => {
     try {
       setIsSubmitting(true);
       setSubmitError(null);
+
+      if (!getCookie("carecloud_token")) {
+        try {
+          setIsPreparingToken(true);
+          await createTokenId();
+        } finally {
+          setIsPreparingToken(false);
+        }
+      }
 
       await userLogin(values.email, values.password);
       await refreshUser();
@@ -85,7 +97,7 @@ const LoginForm = () => {
         <div className="mt-6 flex flex-col gap-4">
           {submitError ? (
             <Alert
-              message={submitError}
+              title={submitError}
               type="error"
               showIcon
               className="rounded-2xl!"
@@ -96,7 +108,8 @@ const LoginForm = () => {
             type="primary"
             htmlType="submit"
             size="large"
-            loading={isSubmitting}
+            loading={isSubmitting || isPreparingToken}
+            disabled={isPreparingToken}
             className="h-12! w-full! rounded-2xl! border-0! bg-slate-950! font-semibold! hover:bg-cyan-800!"
           >
             Sign in

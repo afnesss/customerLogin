@@ -14,11 +14,7 @@ const ProtectedRoute = () => {
 };
 
 function App() {
-  const { isAuthenticated, isBootstrapping } = useAuth();
-
-  if (isBootstrapping) {
-    return <div>Loading...</div>;
-  }
+  const { isAuthenticated } = useAuth();
 
   return (
     <Routes>
