@@ -7,8 +7,8 @@ import {
 } from "react";
 import { getCookie } from "../api/clientConfig";
 import type { User } from "../api/getUserData";
-import { logoutQuery } from "../api/logoutQuery";
 import { getUserData } from "../api/getUserData";
+import { logoutQuery } from "../api/logoutQuery";
 
 type AuthContextValue = {
   user: User | null;
@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await logoutQuery();
     } catch {
-      // error
+      // ignore logout API failure and still clear local auth state
     }
 
     setUser(null);
@@ -77,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   );
 }
+
 export function useAuth() {
   const context = useContext(AuthContext);
 
