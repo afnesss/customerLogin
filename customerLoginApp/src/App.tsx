@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoginForm from "./components/LoginForm";
-import { createTokenId } from "./api/tokenQuery";
-import { getCookie } from "./api/clientConfig";
 import ProfilePage from "./components/ProfilePage";
+import { useAuth } from "./context/AuthContext";
 
-const ProtectedRoute = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
-  if (!isLoggedIn) {
+const ProtectedRoute = () => {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
@@ -14,27 +14,7 @@ const ProtectedRoute = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 };
 
 function App() {
-  const [isBootstrapping, setIsBootstrapping] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const bootstrap = async () => {
-      try {
-        const existingToken = getCookie("carecloud_token");
-
-        if (!existingToken) {
-          await createTokenId();
-        }
-
-        const savedUser = localStorage.getItem("auth_user");
-        setIsLoggedIn(Boolean(savedUser));
-      } finally {
-        setIsBootstrapping(false);
-      }
-    };
-
-    void bootstrap();
-  }, []);
+  const { isAuthenticated, isBootstrapping } = useAuth();
 
   if (isBootstrapping) {
     return <div>Loading...</div>;
@@ -46,19 +26,16 @@ function App() {
       <Route
         path="/login"
         element={
-          isLoggedIn ? (
+          isAuthenticated ? (
             <Navigate to="/profile" replace />
           ) : (
             <main className="relative flex min-h-screen items-center justify-center px-4 py-8">
-              <LoginForm setIsLoggedIn={setIsLoggedIn} />
+              <LoginForm />
             </main>
           )
         }
       />
-      <Route
-        path="/profile"
-        element={<ProtectedRoute isLoggedIn={isLoggedIn} />}
-      />
+      <Route path="/profile" element={<ProtectedRoute />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
