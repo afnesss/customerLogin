@@ -31,16 +31,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    setUser(null);
+    localStorage.removeItem("auth_user");
+    document.cookie =
+      "carecloud_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
     try {
       await logoutQuery();
     } catch {
       // ignore logout API failure and still clear local auth state
     }
-
-    setUser(null);
-    localStorage.removeItem("auth_user");
-    document.cookie =
-      "carecloud_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   };
 
   useEffect(() => {

@@ -1,6 +1,5 @@
 import { Button } from "antd";
 import { LogOut, MapPin, Pencil } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import InfoBox from "./InfoBox";
 
@@ -45,7 +44,6 @@ const getAddressLines = (address: {
 
 const ProfilePage = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   if (!user) {
     return (
@@ -70,8 +68,7 @@ const ProfilePage = () => {
   const addressLines = getAddressLines(address);
 
   const handleLogout = () => {
-    logout();
-    navigate("/login", { replace: true });
+    void logout();
   };
 
   return (
