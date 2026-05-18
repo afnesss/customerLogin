@@ -1,6 +1,31 @@
-import { Button, Form, Input } from "antd";
+import { useState } from "react";
+import { Alert, Button, Form, Input } from "antd";
+import { UserLoginError, userLogin } from "../api/loginQuery";
 
 const LoginForm = () => {
+  const [form] = Form.useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const handleSubmit = async (values: { email: string; password: string }) => {
+    try {
+      setIsSubmitting(true);
+      setSubmitError(null);
+
+      const response = await userLogin(values.email, values.password);
+      console.log("user login success", response);
+    } catch (error) {
+      if (error instanceof UserLoginError) {
+        setSubmitError(error.message);
+        return;
+      }
+
+      setSubmitError("Unable to sign in right now. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section className="relative w-full max-w-md rounded-[28px] border border-white/70 bg-white/90 p-7 shadow-[0_28px_90px_rgba(15,23,42,0.16)] backdrop-blur md:p-9">
       <div className="mb-8 text-center">
@@ -15,12 +40,21 @@ const LoginForm = () => {
         </p>
       </div>
 
-      <Form layout="vertical" requiredMark={false} className="space-y-1">
+      <Form
+        form={form}
+        layout="vertical"
+        requiredMark={false}
+        onFinish={handleSubmit}
+      >
         <Form.Item
           label={
             <span className="text-sm font-medium text-slate-700">Email</span>
           }
           name="email"
+          rules={[
+            { required: true, message: "Please enter your email" },
+            { type: "email", message: "Enter a valid email address" },
+          ]}
         >
           <Input
             size="large"
@@ -34,6 +68,7 @@ const LoginForm = () => {
             <span className="text-sm font-medium text-slate-700">Password</span>
           }
           name="password"
+          rules={[{ required: true, message: "Please enter your password" }]}
         >
           <Input.Password
             size="large"
@@ -42,14 +77,26 @@ const LoginForm = () => {
           />
         </Form.Item>
 
-        <Button
-          type="primary"
-          htmlType="submit"
-          size="large"
-          className="h-12! w-full! rounded-2xl! border-0! bg-slate-950! font-semibold! hover:bg-cyan-800!"
-        >
-          Sign in
-        </Button>
+        <div className="mt-6 flex flex-col gap-4">
+          {submitError ? (
+            <Alert
+              message={submitError}
+              type="error"
+              showIcon
+              className="rounded-2xl!"
+            />
+          ) : null}
+
+          <Button
+            type="primary"
+            htmlType="submit"
+            size="large"
+            loading={isSubmitting}
+            className="h-12! w-full! rounded-2xl! border-0! bg-slate-950! font-semibold! hover:bg-cyan-800!"
+          >
+            Sign in
+          </Button>
+        </div>
       </Form>
     </section>
   );

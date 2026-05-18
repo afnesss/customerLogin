@@ -1,9 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import LoginForm from "./components/LoginForm";
 import { createTokenId } from "./api/tokenQuery";
 
 function App() {
+  const didRun = useRef(false);
+
   useEffect(() => {
+    if (didRun.current) return;
+    didRun.current = true;
     createTokenId();
   }, []);
 
