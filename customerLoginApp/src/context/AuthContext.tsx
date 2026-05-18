@@ -5,10 +5,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { User } from "../api/getUserData";
 import { getCookie } from "../api/clientConfig";
+import type { User } from "../api/getUserData";
 import { logoutQuery } from "../api/logoutQuery";
-import { createTokenId } from "../api/tokenQuery";
 import { getUserData } from "../api/getUserData";
 
 type AuthContextValue = {
@@ -47,21 +46,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const bootstrap = async () => {
       try {
-        let token = getCookie("carecloud_token");
-
-        if (!token) {
-          await createTokenId();
-          token = getCookie("carecloud_token");
+        if (!getCookie("carecloud_token")) {
+          setUser(null);
+          return;
         }
 
-        if (token) {
-          try {
-            const data = await getUserData();
-            setUser(data.data.customers[0] ?? null);
-          } catch {
-            setUser(null);
-          }
-        }
+        await refreshUser();
+      } catch {
+        setUser(null);
       } finally {
         setIsBootstrapping(false);
       }
