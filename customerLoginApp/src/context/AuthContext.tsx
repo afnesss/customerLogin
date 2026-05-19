@@ -32,11 +32,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      setUser(null);
-      Cookies.remove("carecloud_token", { path: "/" });
       await logoutQuery();
     } catch {
       // ignore logout API failure and still clear local auth state
+    } finally {
+      setUser(null);
+      Cookies.remove("carecloud_token", { path: "/" });
     }
   };
 

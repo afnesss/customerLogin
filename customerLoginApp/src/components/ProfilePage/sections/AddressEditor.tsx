@@ -172,7 +172,7 @@ const AddressEditor = ({ form, isEditing }: AddressEditorProps) => {
               Math.min(currentValue + 1, addressLineKeys.length),
             )
           }
-          className="rounded-xl!"
+          className="rounded-xl! hover:border-cyan-700! hover:text-cyan-800!"
         >
           Add address line
         </Button>
