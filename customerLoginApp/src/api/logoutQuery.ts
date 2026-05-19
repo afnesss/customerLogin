@@ -13,7 +13,6 @@ export const logoutQuery = async () => {
     {
       headers: {
         Accept: "application/json",
-        "Accept-Language": "cs, en-gb;q=0.8",
       },
     },
   );

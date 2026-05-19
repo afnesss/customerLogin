@@ -34,6 +34,7 @@ export type CustomerPersonalInformation = {
   store_id: string;
   address: CustomerAddress;
   agreement: CustomerConsent;
+  salutation: string;
 };
 
 export type User = {

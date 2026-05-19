@@ -21,6 +21,7 @@ export const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = getCookie("carecloud_token");
   config.headers["Content-Type"] = "application/json";
+  config.headers["Accept-Language"] = "cs, en-gb;q=0.8";
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
