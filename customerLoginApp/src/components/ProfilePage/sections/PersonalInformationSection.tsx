@@ -11,6 +11,7 @@ import {
 } from "antd";
 import {
   Calendar,
+  Camera,
   Globe,
   LogOut,
   Mail,
@@ -21,7 +22,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { CustomerPersonalInformation } from "../../../types/customerDto";
 import { getCountryLabel } from "../../../utils/countryOptions";
 import {
@@ -122,6 +123,21 @@ const PersonalInformationSection = ({
   onSave,
   lastChange,
 }: PersonalInformationSectionProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isEditing) setPhotoPreview(null);
+  }, [isEditing]);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setPhotoPreview(url);
+    form.setFieldValue("photo_url", url);
+  };
+
   const birthdate = formatDate(personalInformation.birthdate);
   const countryCode = personalInformation.address.country_code?.toUpperCase();
   const countryName = getCountryLabel(countryCode);
@@ -175,13 +191,33 @@ const PersonalInformationSection = ({
       <Space orientation="vertical" size={20} className="w-full">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-center gap-4">
-            <Avatar
-              size={68}
-              src={personalInformation.photo_url || undefined}
-              className="shrink-0 bg-cyan-700! text-xl! font-semibold!"
-            >
-              {initials || "?"}
-            </Avatar>
+            <div className="relative shrink-0">
+              <Avatar
+                size={68}
+                src={photoPreview || personalInformation.photo_url || undefined}
+                className="bg-cyan-700! text-xl! font-semibold!"
+              >
+                {initials || "?"}
+              </Avatar>
+              {isEditing && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute right-0 bottom-0 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-slate-700 text-white hover:bg-cyan-700"
+                  >
+                    <Camera size={12} />
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoChange}
+                  />
+                </>
+              )}
+            </div>
             <div className="min-w-0">
               <Title level={4} className="mb-1! text-slate-950!">
                 {personalInformation.first_name} {personalInformation.last_name}
@@ -204,14 +240,14 @@ const PersonalInformationSection = ({
                   type="primary"
                   loading={isSaving}
                   onClick={() => void form.submit()}
-                  className="rounded-xl!"
+                  className="rounded-xl! bg-cyan-700! hover:bg-cyan-800!"
                 >
                   Save changes
                 </Button>
                 <Button
                   icon={<X size={14} />}
                   onClick={onCancel}
-                  className="rounded-xl!"
+                  className="rounded-xl! hover:border-cyan-800! hover:text-cyan-800!"
                 >
                   Cancel
                 </Button>
@@ -221,7 +257,7 @@ const PersonalInformationSection = ({
                 <Button
                   icon={<Pencil size={14} />}
                   onClick={onEdit}
-                  className="rounded-xl!"
+                  className="rounded-xl!  hover:border-cyan-800! hover:text-cyan-800!"
                 >
                   Edit
                 </Button>
