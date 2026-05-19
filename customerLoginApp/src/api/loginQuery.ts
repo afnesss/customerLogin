@@ -1,6 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { api } from "./clientConfig";
+import { toast } from "sonner";
 
 type LoginPayload = {
   login_type: string;
@@ -41,11 +42,14 @@ export const userLogin = async (login: string, password: string) => {
       },
     );
     console.log(res.data);
+    toast.success("Logged in successfuly ");
     return res.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new UserLoginError(
-        error.response?.data?.message || error.message || "User login failed",
+        error.response?.data?.error?.title ||
+          error.message ||
+          "User login failed",
         error.response?.status,
         error.response?.data,
       );

@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { Toaster } from "sonner";
 import LoginForm from "./pages/LoginForm";
 import ProfilePage from "./pages/ProfilePage";
 import { useAuth } from "./context/AuthContext";
@@ -21,6 +22,8 @@ function App() {
   }
 
   return (
+    <>
+    <Toaster position="top-right" richColors />
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route
@@ -38,6 +41,7 @@ function App() {
       <Route path="/profile" element={<ProtectedRoute />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
+    </>
   );
 }
 

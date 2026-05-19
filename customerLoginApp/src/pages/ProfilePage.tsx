@@ -1,4 +1,6 @@
-import { Form, Row, message } from "antd";
+import { Form, Row } from "antd";
+import axios from "axios";
+import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { updateUser } from "../api/updateUserQuery";
 import ProfileEmptyState from "../components/ProfilePage/ProfileEmptyState";
@@ -30,7 +32,6 @@ const cardClassName =
 
 const ProfilePage = () => {
   const { user, logout, setUser } = useAuth();
-  const [messageApi, contextHolder] = message.useMessage();
   const [profileForm] = Form.useForm<ProfileFormValues>();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -46,7 +47,6 @@ const ProfilePage = () => {
   if (!user) {
     return (
       <>
-        {contextHolder}
         <ProfileEmptyState />
       </>
     );
@@ -110,9 +110,23 @@ const ProfilePage = () => {
 
       await saveProfile(nextPersonalInformation);
       setIsEditingProfile(false);
-      messageApi.success("Profile updated");
-    } catch {
-      messageApi.error("Failed to update profile");
+      toast.success("Profile updated");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const invalidParams = error.response?.data?.error?.error_data?.invalid_params;
+        if (invalidParams?.length > 0) {
+          profileForm.setFields(
+            invalidParams.map(({ name, message }: { name: string; message: string }) => ({
+              name,
+              errors: [message],
+            })),
+          );
+        } else {
+          toast.error(error.response?.data?.error?.title ?? "Failed to update profile");
+        }
+      } else {
+        toast.error("Failed to update profile");
+      }
     } finally {
       setIsSavingProfile(false);
     }
@@ -120,10 +134,9 @@ const ProfilePage = () => {
 
   return (
     <>
-      {contextHolder}
       <main className="relative min-h-screen bg-blue-50 px-4 py-5">
         <div className="mx-auto w-full max-w-6xl space-y-3">
-          <Row gutter={[16, 16]} align="stretch">
+          <Row gutter={[16, 16]} align="stretch" className="m-0!">
             <PersonalInformationSection
               cardClassName={cardClassName}
               form={profileForm}
