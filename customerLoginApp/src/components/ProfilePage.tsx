@@ -72,13 +72,13 @@ const ProfilePage = () => {
         >
           <Space orientation="vertical" size={12}>
             <Text className="text-sm! font-medium! uppercase tracking-wide text-cyan-700!">
-            Profile
+              Profile
             </Text>
             <Title level={2} className="m-0! text-slate-950!">
-            No user data
+              No user data
             </Title>
             <Paragraph className="m-0! text-slate-500!">
-            User details are not available yet.
+              User details are not available yet.
             </Paragraph>
           </Space>
         </Card>
@@ -97,43 +97,44 @@ const ProfilePage = () => {
   };
 
   return (
-    <main className="relative min-h-screen bg-blue-50 px-4 py-5 md:py-6">
-      <div className="mx-auto w-full max-w-6xl space-y-4">
+    <main className="relative min-h-screen bg-blue-50 px-4 py-5 ">
+      <div className="mx-auto w-full max-w-6xl space-y-3">
         <Card className={cardClassName}>
           <Space orientation="vertical" size={24} className="w-full">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <Text className="text-xs! font-medium! uppercase text-cyan-700!">
-                  Profile
-                </Text>
-                <Title level={2} className="mt-2! mb-0! text-slate-950!">
-                  {personal_information.first_name}{" "}
-                  {personal_information.last_name}
-                </Title>
-                <Paragraph className="mt-2! mb-0! text-slate-500!">
-                  Customer profile loaded from the customer interface.
-                </Paragraph>
+            <div className="flex flex-col">
+              <div className="flex  gap-3 flex-row items-start justify-between">
+                <div>
+                  <Text className="text-xs! font-medium! uppercase text-cyan-700!">
+                    Profile
+                  </Text>
+                  <Title level={2} className="mt-2! mb-0! text-slate-950!">
+                    {personal_information.first_name}{" "}
+                    {personal_information.last_name}
+                  </Title>
+                </div>
+                <Space wrap>
+                  <Button
+                    icon={<Pencil size={16} />}
+                    size="large"
+                    className="rounded-2xl!"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    type="primary"
+                    danger
+                    icon={<LogOut size={16} />}
+                    size="large"
+                    onClick={handleLogout}
+                    className="rounded-2xl! bg-slate-900! hover:bg-red-900!"
+                  >
+                    Logout
+                  </Button>
+                </Space>
               </div>
-
-              <Space wrap>
-                <Button
-                  icon={<Pencil size={16} />}
-                  size="large"
-                  className="rounded-2xl!"
-                >
-                  Edit
-                </Button>
-                <Button
-                  type="primary"
-                  danger
-                  icon={<LogOut size={16} />}
-                  size="large"
-                  onClick={handleLogout}
-                  className="rounded-2xl! bg-slate-900! hover:bg-red-900!"
-                >
-                  Logout
-                </Button>
-              </Space>
+              <Paragraph className="mt-2! mb-0! text-slate-500!">
+                Customer profile loaded from the customer interface.
+              </Paragraph>
             </div>
 
             <Card
@@ -143,11 +144,11 @@ const ProfilePage = () => {
               variant="borderless"
             >
               <div className="space-y-1">
-                    {addressLines.map((line) => (
+                {addressLines.map((line) => (
                   <Text key={line} className="block text-slate-700!">
                     {line}
                   </Text>
-                    ))}
+                ))}
               </div>
             </Card>
           </Space>
@@ -156,7 +157,7 @@ const ProfilePage = () => {
         <Row gutter={[16, 16]} align="stretch">
           <Col xs={24} xl={16} className="flex">
             <Card className={`${cardClassName} h-full! w-full`}>
-              <Space orientation="vertical" size={20} className="w-full">
+              <Space orientation="vertical" size={15} className="w-full">
                 <div className="flex flex-col ">
                   <div className="flex flex-row items-center justify-between">
                     <Title level={4} className="mb-1! text-slate-950!">
@@ -176,126 +177,141 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <InfoBox
-                label="First Name"
-                value={personal_information.first_name}
-              />
-              <InfoBox
-                label="Last Name"
-                value={personal_information.last_name}
-              />
+                  <InfoBox
+                    label="First Name"
+                    value={personal_information.first_name}
+                  />
+                  <InfoBox
+                    label="Last Name"
+                    value={personal_information.last_name}
+                  />
                   <InfoBox
                     label="Salutation"
                     value={personal_information.salutation}
                   />
-              <InfoBox
-                label="Email"
-                value={personal_information.email}
-                breakAll
-              />
-              <InfoBox label="Phone" value={personal_information.phone} />
-              <InfoBox
-                label="Birthdate"
-                value={personal_information.birthdate}
-              />
-              <InfoBox
-                label="Gender"
+                  <InfoBox
+                    label="Email"
+                    value={personal_information.email}
+                    breakAll
+                  />
+                  <InfoBox label="Phone" value={personal_information.phone} />
+                  <InfoBox
+                    label="Birthdate"
+                    value={personal_information.birthdate}
+                  />
+                  <InfoBox
+                    label="Gender"
                     value={formatGenderValue(personal_information.gender)}
-              />
-              <InfoBox
-                label="Language"
-                value={personal_information.language_id}
-              />
-            </div>
-
-            <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                System Details
-              </h3>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <InfoBox label="Customer ID" value={customer_id} breakAll />
-                <InfoBox label="Last Change" value={last_change} />
-                <InfoBox
-                  label="Store ID"
-                  value={personal_information.store_id}
-                  breakAll
-                />
-                <InfoBox
-                  label="Country"
-                  value={address.country_code?.toUpperCase()}
-                />
-              </div>
-            </div>
-          </section>
-
-          <aside className="xl:sticky xl:top-6 xl:self-start">
-            <section className="rounded-3xl border border-white/70 bg-white/90 p-5 shadow-[0_20px_70px_rgba(15,23,42,0.14)] backdrop-blur md:p-6">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-950">
-                  Agreements
-                </h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Compact consent overview.
-                </p>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2.5">
-                  <span className="text-sm font-medium text-slate-700">GTC</span>
-                  <span className="text-sm font-semibold text-slate-950">
-                    {formatAgreementValue(agreement.agreement_gtc)}
-                  </span>
+                  />
+                  <InfoBox
+                    label="Language"
+                    value={personal_information.language_id}
+                  />
                 </div>
-                <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2.5">
-                  <span className="text-sm font-medium text-slate-700">
-                    Profiling
-                  </span>
-                  <span className="text-sm font-semibold text-slate-950">
-                    {formatAgreementValue(agreement.agreement_profiling)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2.5">
-                  <span className="text-sm font-medium text-slate-700">
-                    Marketing
-                  </span>
-                  <span className="text-sm font-semibold text-slate-950">
-                    {formatAgreementValue(
-                      agreement.agreement_marketing_communication,
-                    )}
-                  </span>
-                </div>
-              </div>
 
-              <div className="mt-5">
-                <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                  Custom Agreements
-                </h3>
-                <div className="mt-3 space-y-2">
-                  {agreement.custom_agreements.map((item) => (
+                <Card
+                  size="small"
+                  title="System Details"
+                  className="rounded-2xl!"
+                >
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <InfoBox
+                      label="Customer ID"
+                      value={customer_id}
+                      noWrap
+                      variant="secondary"
+                    />
+                    <InfoBox
+                      label="Last Change"
+                      value={last_change}
+                      variant="secondary"
+                    />
+                    <InfoBox
+                      label="Store ID"
+                      value={personal_information.store_id}
+                      noWrap
+                      variant="secondary"
+                    />
+                    <InfoBox
+                      label="Country"
+                      value={address.country_code?.toUpperCase()}
+                      variant="secondary"
+                    />
+                  </div>
+                </Card>
+              </Space>
+            </Card>
+          </Col>
+
+          <Col xs={24} xl={8} className="flex">
+            <Card className={`${cardClassName} h-full! w-full`}>
+              <Space orientation="vertical" size={15} className="w-full">
+                <div>
+                  <Title level={4} className="mb-1! text-slate-950!">
+                    Agreements
+                  </Title>
+                  <Paragraph className="m-0! text-slate-500!">
+                    Compact consent overview.
+                  </Paragraph>
+                </div>
+
+                <div className="space-y-2">
+                  {[
+                    ["GTC", formatAgreementValue(agreement.agreement_gtc)],
+                    [
+                      "Profiling",
+                      formatAgreementValue(agreement.agreement_profiling),
+                    ],
+                    [
+                      "Marketing",
+                      formatAgreementValue(
+                        agreement.agreement_marketing_communication,
+                      ),
+                    ],
+                  ].map(([label, value]) => (
                     <div
-                      key={item.agreement_id}
-                      className="rounded-2xl border border-slate-200 bg-white px-3 py-2.5"
+                      key={label}
+                      className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-2.5"
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                            Agreement ID
-                          </p>
-                          <p className="mt-1 break-all text-xs leading-5 text-slate-600">
-                            {item.agreement_id}
-                          </p>
-                        </div>
-                        <span className="whitespace-nowrap rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-800">
-                          {formatAgreementValue(item.agreement_value)}
-                        </span>
-                      </div>
+                      <Text className="text-sm! text-slate-700!">{label}</Text>
+                      <Text strong>{value}</Text>
                     </div>
                   ))}
                 </div>
-              </div>
-            </section>
-          </aside>
-        </div>
+
+                <Card
+                  size="small"
+                  title="Custom Agreements"
+                  className="rounded-2xl!"
+                >
+                  {agreement.custom_agreements.length === 0 ? (
+                    <Empty
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      description="No custom agreements"
+                    />
+                  ) : (
+                    <div className="space-y-3">
+                      {agreement.custom_agreements.map((item) => (
+                        <InfoBox
+                          key={item.agreement_id}
+                          label="Agreement ID"
+                          value={item.agreement_id}
+                          noWrap
+                          variant="secondary"
+                          trailing={
+                            <Tag className="m-0! rounded-full self-start">
+                              {formatAgreementValue(item.agreement_value)}
+                            </Tag>
+                          }
+                        />
+                      ))}
+                    </div>
+                  )}
+                </Card>
+              </Space>
+            </Card>
+          </Col>
+        </Row>
       </div>
     </main>
   );
