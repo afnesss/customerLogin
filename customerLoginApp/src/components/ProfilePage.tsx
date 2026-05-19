@@ -1,5 +1,18 @@
-import { Button } from "antd";
-import { LogOut, MapPin, Pencil } from "lucide-react";
+import {
+  Button,
+  Card,
+
+const { Paragraph, Text, Title } = Typography;
+  Descriptions,
+  Empty,
+  Row,
+  Space,
+  Tag,
+  Typography,
+} from "antd";
+import { LogOut, Pencil } from "lucide-react";
+import type { User } from "../api/customerDto";
+import InfoBox from "./InfoBox";
 import { useAuth } from "../context/AuthContext";
 import InfoBox from "./InfoBox";
 
@@ -42,23 +55,31 @@ const getAddressLines = (address: {
   return lines.length > 0 ? lines : ["Not specified"];
 };
 
+const cardClassName =
+  "rounded-3xl! border-white/70! bg-white/90! shadow-lg! backdrop-blur mb-5!";
+
 const ProfilePage = () => {
   const { user, logout } = useAuth();
 
   if (!user) {
     return (
       <main className="relative flex min-h-screen items-center justify-center px-4 py-8">
-        <section className="w-full max-w-md rounded-[28px] border border-white/70 bg-white/90 p-7 text-center shadow-[0_28px_90px_rgba(15,23,42,0.16)] backdrop-blur md:p-9">
-          <p className="text-sm font-medium uppercase tracking-[0.28em] text-cyan-700">
+        <Card
+          className="w-full max-w-md rounded-lg! border-white/70! bg-white/90! text-center shadow-lg backdrop-blur"
+          styles={{ body: { padding: 32 } }}
+        >
+          <Space orientation="vertical" size={12}>
+            <Text className="text-sm! font-medium! uppercase tracking-wide text-cyan-700!">
             Profile
-          </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">
+            </Text>
+            <Title level={2} className="m-0! text-slate-950!">
             No user data
-          </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-500">
+            </Title>
+            <Paragraph className="m-0! text-slate-500!">
             User details are not available yet.
-          </p>
-        </section>
+            </Paragraph>
+          </Space>
+        </Card>
       </main>
     );
   }
@@ -74,27 +95,27 @@ const ProfilePage = () => {
   return (
     <main className="relative min-h-screen bg-blue-50 px-4 py-5 md:py-6">
       <div className="mx-auto w-full max-w-6xl space-y-4">
-        <section className="rounded-3xl border border-white/70 bg-white/90 p-5 shadow-[0_20px_70px_rgba(15,23,42,0.14)] backdrop-blur md:p-6">
-          <div className="flex flex-col gap-4">
+        <Card className={cardClassName}>
+          <Space orientation="vertical" size={24} className="w-full">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <p className="text-xs font-medium uppercase tracking-[0.28em] text-cyan-700">
+                <Text className="text-xs! font-medium! uppercase text-cyan-700!">
                   Profile
-                </p>
-                <h1 className="text-2xl font-semibold tracking-tight text-slate-950 md:text-3xl">
+                </Text>
+                <Title level={2} className="mt-2! mb-0! text-slate-950!">
                   {personal_information.first_name}{" "}
                   {personal_information.last_name}
-                </h1>
-                <p className="mt-1.5 text-sm leading-5 text-slate-500">
+                </Title>
+                <Paragraph className="mt-2! mb-0! text-slate-500!">
                   Customer profile loaded from the customer interface.
-                </p>
+                </Paragraph>
               </div>
 
-              <div className="flex flex-wrap justify-end gap-2 self-start sm:self-auto">
+              <Space wrap>
                 <Button
-                  type="default"
                   icon={<Pencil size={16} />}
-                  className="h-11! rounded-2xl! border-slate-200! bg-white! px-4! font-medium! text-slate-700! shadow-none!"
+                  size="large"
+                  className="rounded-2xl!"
                 >
                   Edit
                 </Button>
@@ -103,11 +124,11 @@ const ProfilePage = () => {
                   danger
                   icon={<LogOut size={16} />}
                   onClick={handleLogout}
-                  className="h-11! rounded-2xl! border-0! bg-slate-950! px-4! font-semibold! text-white! hover:bg-rose-700!"
+                  className="rounded-2xl! bg-slate-900! hover:bg-red-900!"
                 >
                   Logout
                 </Button>
-              </div>
+              </Space>
             </div>
 
             <div className="rounded-2xl bg-slate-50 px-4 py-4">
