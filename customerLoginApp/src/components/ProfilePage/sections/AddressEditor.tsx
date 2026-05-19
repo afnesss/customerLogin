@@ -52,7 +52,9 @@ const AddressEditor = ({ form, isEditing }: AddressEditorProps) => {
     | undefined;
   const [visibleAddressLines, setVisibleAddressLines] = useState(1);
 
-  const addressLineValues = addressLineKeys.map((key) => values?.[key] ?? "");
+  const addressLineValues = addressLineKeys.map(
+    (key) => (values?.[key] ?? form.getFieldValue(key)) || "",
+  );
   const highestFilledAddressLine = Math.max(
     1,
     ...addressLineValues.map((value, index) =>
@@ -79,7 +81,10 @@ const AddressEditor = ({ form, isEditing }: AddressEditorProps) => {
     values?.country_code ?? form.getFieldValue("country_code")
   )?.toUpperCase();
   const countryLabel = getCountryLabel(countryCode);
-  const cityZipValue = [values?.city, values?.zip]
+  const cityZipValue = [
+    values?.city ?? form.getFieldValue("city"),
+    values?.zip ?? form.getFieldValue("zip"),
+  ]
     .filter((value) => typeof value === "string" && value.trim() !== "")
     .join(", ");
 
