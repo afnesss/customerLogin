@@ -1,5 +1,5 @@
 import { api } from "./clientConfig";
-import type { User } from "./customerDto";
+import type { User } from "../types/customerDto";
 
 export type GetUserDataResponse = {
   data: {

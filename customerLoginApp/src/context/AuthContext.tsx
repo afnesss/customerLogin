@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { getCookie } from "../api/clientConfig";
-import type { User } from "../api/customerDto";
+import type { User } from "../types/customerDto";
 import { getUserData } from "../api/getUserData";
 import { logoutQuery } from "../api/logoutQuery";
 
