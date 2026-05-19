@@ -1,3 +1,4 @@
+import type { FormInstance } from "antd";
 import {
   Avatar,
   Button,
@@ -8,7 +9,6 @@ import {
   Space,
   Typography,
 } from "antd";
-import type { FormInstance } from "antd";
 import {
   Calendar,
   Globe,
@@ -21,14 +21,25 @@ import {
   Users,
   X,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import type { CustomerPersonalInformation } from "../../../types/customerDto";
-import { getCountryLabel } from "../countryOptions";
-import { formatGenderValue } from "../heplerFunctions";
-import type { ProfileFormValues } from "../profileFormTypes";
+import { getCountryLabel } from "../../../utils/countryOptions";
+import { formatDate, formatGenderValue } from "../../../utils/heplerFunctions";
+import type { ProfileFormValues } from "../../../types/profileFormTypes";
 import AddressEditor from "./AddressEditor";
-import { type ProfileFieldConfig } from "./profileSectionShared";
+import type { Rule } from "antd/es/form";
+import { SectionLabel } from "../../SectionLabel";
+import { FieldRow } from "../FieldRow";
 
 const { Text, Title } = Typography;
+
+type PersonalEditField = {
+  icon: ReactNode;
+  label: string;
+  fieldName: Extract<keyof ProfileFormValues, string>;
+  control: ReactNode;
+  rules?: Rule[];
+};
 
 const genderOptions = [
   { label: "Not specified", value: 0 },
@@ -36,10 +47,42 @@ const genderOptions = [
   { label: "Male", value: 2 },
 ];
 
+const personalEditFields: PersonalEditField[] = [
+  {
+    icon: <User size={18} />,
+    label: "First Name",
+    fieldName: "first_name",
+    control: <Input size="middle" className="rounded-xl! shadow-none!" />,
+    rules: [{ required: true, message: "Enter first name" }],
+  },
+  {
+    icon: <User size={18} />,
+    label: "Last Name",
+    fieldName: "last_name",
+    control: <Input size="middle" className="rounded-xl! shadow-none!" />,
+    rules: [{ required: true, message: "Enter last name" }],
+  },
+  {
+    icon: <Users size={18} />,
+    label: "Gender",
+    fieldName: "gender",
+    control: (
+      <Select options={genderOptions} size="middle" className="w-full" />
+    ),
+  },
+  {
+    icon: <Calendar size={18} />,
+    label: "Birthdate",
+    fieldName: "birthdate",
+    control: (
+      <Input type="date" size="middle" className="rounded-xl! shadow-none!" />
+    ),
+  },
+];
+
 type PersonalInformationSectionProps = {
   cardClassName: string;
   form: FormInstance<ProfileFormValues>;
-  personalFields: ProfileFieldConfig<ProfileFormValues>[];
   personalInformation: CustomerPersonalInformation;
   isEditing: boolean;
   isSaving: boolean;
@@ -50,28 +93,9 @@ type PersonalInformationSectionProps = {
   lastChange?: string | null;
 };
 
-const formatBirthdate = (value: string) => {
-  if (!value) {
-    return null;
-  }
-
-  const parsedDate = new Date(value);
-
-  if (Number.isNaN(parsedDate.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(parsedDate);
-};
-
 const PersonalInformationSection = ({
   cardClassName,
   form,
-  personalFields,
   personalInformation,
   isEditing,
   isSaving,
@@ -81,7 +105,7 @@ const PersonalInformationSection = ({
   onSave,
   lastChange,
 }: PersonalInformationSectionProps) => {
-  const birthdate = formatBirthdate(personalInformation.birthdate);
+  const birthdate = formatDate(personalInformation.birthdate);
   const countryCode = personalInformation.address.country_code?.toUpperCase();
   const countryName = getCountryLabel(countryCode);
   const contactItems = [
@@ -104,6 +128,7 @@ const PersonalInformationSection = ({
       fieldName: "language_id" as const,
     },
   ].filter((item) => isEditing || (item.value && item.value.trim() !== ""));
+
   const subtitle = [
     formatGenderValue(personalInformation.gender),
     birthdate ? `Born ${birthdate}` : null,
@@ -111,6 +136,7 @@ const PersonalInformationSection = ({
   ]
     .filter(Boolean)
     .join(" | ");
+
   const initials = [
     personalInformation.first_name?.[0],
     personalInformation.last_name?.[0],
@@ -135,19 +161,14 @@ const PersonalInformationSection = ({
               <Title level={4} className="mb-1! text-slate-950!">
                 {personalInformation.first_name} {personalInformation.last_name}
               </Title>
-              {subtitle ? (
+              {subtitle && (
                 <Text className="text-sm! text-slate-500!">{subtitle}</Text>
-              ) : null}
-              {lastChange ? (
+              )}
+              {lastChange && (
                 <Text className="mt-0.5! block text-xs! text-slate-400!">
-                  Updated{" "}
-                  {new Intl.DateTimeFormat("en", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  }).format(new Date(lastChange))}
+                  Updated {formatDate(lastChange)}
                 </Text>
-              ) : null}
+              )}
             </div>
           </div>
 
@@ -191,105 +212,43 @@ const PersonalInformationSection = ({
           </div>
         </div>
 
+        {/* Form body */}
         <Form form={form} layout="vertical" onFinish={onSave}>
           <div className="border-t border-slate-200 pt-5">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-0">
+              {/* Left column */}
               <section className="lg:pr-8">
                 {isEditing && (
                   <>
-                    <Text className="text-xs! font-semibold! uppercase tracking-wide text-slate-500!">
-                      Personal
-                    </Text>
+                    <SectionLabel>Personal</SectionLabel>
                     <div className="mt-4 space-y-4">
-                      {[
-                        {
-                          icon: <User size={18} />,
-                          label: "First Name",
-                          fieldName: "first_name" as const,
-                          rules: [
-                            { required: true, message: "Enter first name" },
-                          ],
-                        },
-                        {
-                          icon: <User size={18} />,
-                          label: "Last Name",
-                          fieldName: "last_name" as const,
-                          rules: [
-                            { required: true, message: "Enter last name" },
-                          ],
-                        },
-                      ].map((item) => (
-                        <div
-                          key={item.fieldName}
-                          className="grid grid-cols-[24px_78px_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[24px_100px_minmax(0,1fr)]"
+                      {personalEditFields.map((field) => (
+                        <FieldRow
+                          key={field.fieldName}
+                          icon={field.icon}
+                          label={field.label}
                         >
-                          <span className="pt-0.5 text-slate-400">
-                            {item.icon}
-                          </span>
-                          <Text className="font-medium! text-slate-500!">
-                            {item.label}
-                          </Text>
                           <Form.Item
-                            name={item.fieldName}
-                            rules={item.rules}
+                            name={field.fieldName}
+                            rules={field.rules}
                             className="mb-0!"
                           >
-                            <Input
-                              size="middle"
-                              className="rounded-xl! shadow-none!"
-                            />
+                            {field.control}
                           </Form.Item>
-                        </div>
+                        </FieldRow>
                       ))}
-                      <div className="grid grid-cols-[24px_78px_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[24px_100px_minmax(0,1fr)]">
-                        <span className="pt-0.5 text-slate-400">
-                          <Users size={18} />
-                        </span>
-                        <Text className="font-medium! text-slate-500!">
-                          Gender
-                        </Text>
-                        <Form.Item name="gender" className="mb-0!">
-                          <Select
-                            options={genderOptions}
-                            size="middle"
-                            className="w-full rounded-xl!"
-                          />
-                        </Form.Item>
-                      </div>
-                      <div className="grid grid-cols-[24px_78px_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[24px_100px_minmax(0,1fr)]">
-                        <span className="pt-0.5 text-slate-400">
-                          <Calendar size={18} />
-                        </span>
-                        <Text className="font-medium! text-slate-500!">
-                          Birthdate
-                        </Text>
-                        <Form.Item name="birthdate" className="mb-0!">
-                          <Input
-                            type="date"
-                            size="middle"
-                            className="rounded-xl! shadow-none!"
-                          />
-                        </Form.Item>
-                      </div>
                     </div>
                   </>
                 )}
                 <div className={isEditing ? "mt-6" : ""}>
-                  <Text className="text-xs! font-semibold! uppercase tracking-wide text-slate-500!">
-                    Contact
-                  </Text>
+                  <SectionLabel>Contact</SectionLabel>
                   <div className="mt-4 space-y-4">
                     {contactItems.map((item) => (
-                      <div
+                      <FieldRow
                         key={item.label}
-                        className="grid grid-cols-[24px_78px_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[24px_100px_minmax(0,1fr)]"
+                        icon={item.icon}
+                        label={item.label}
                       >
-                        <span className="pt-0.5 text-slate-400">
-                          {item.icon}
-                        </span>
-                        <Text className="font-medium! text-slate-500!">
-                          {item.label}
-                        </Text>
                         {isEditing ? (
                           <Form.Item name={item.fieldName} className="mb-0!">
                             <Input
@@ -302,34 +261,27 @@ const PersonalInformationSection = ({
                             {item.value}
                           </Text>
                         )}
-                      </div>
+                      </FieldRow>
                     ))}
                   </div>
                 </div>
               </section>
 
+              {/* Right column */}
               <section className="border-t border-slate-200 pt-6 lg:border-t-0 lg:border-l lg:pl-8 lg:pt-0">
-                <div className="flex items-center justify-between gap-3">
-                  <Text className="text-xs! font-semibold! uppercase tracking-wide text-slate-500!">
-                    Address
-                  </Text>
-                </div>
+                <SectionLabel>Address</SectionLabel>
                 <AddressEditor form={form} isEditing={isEditing} />
               </section>
             </div>
 
+            {/* Preferences */}
             <section className="mt-6 border-t border-slate-200 pt-5">
-              <Text className="text-xs! font-semibold! uppercase tracking-wide text-slate-500!">
-                Preferences
-              </Text>
+              <SectionLabel>Preferences</SectionLabel>
               <div className="mt-4">
-                <div className="flex items-start gap-3">
-                  <span className="pt-0.5 text-slate-400">
-                    <MessageSquareText size={18} />
-                  </span>
-                  <Text className="font-medium! text-slate-500!">
-                    Salutation:
-                  </Text>
+                <FieldRow
+                  icon={<MessageSquareText size={18} />}
+                  label="Salutation"
+                >
                   {isEditing ? (
                     <Form.Item name="salutation" className="mb-0! flex-1">
                       <Input
@@ -342,7 +294,7 @@ const PersonalInformationSection = ({
                       {personalInformation.salutation || "Not specified"}
                     </Text>
                   )}
-                </div>
+                </FieldRow>
               </div>
             </section>
           </div>
