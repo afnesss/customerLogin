@@ -72,7 +72,11 @@ const personalEditFields: PersonalEditField[] = [
     label: "Gender",
     fieldName: "gender",
     control: (
-      <Select options={genderOptions} size="middle" className="w-full" />
+      <Select
+        options={genderOptions}
+        size="middle"
+        className="w-full rounded-xl!"
+      />
     ),
   },
   {
@@ -213,23 +217,25 @@ const PersonalInformationSection = ({
                 </Button>
               </>
             ) : (
-              <Button
-                icon={<Pencil size={14} />}
-                onClick={onEdit}
-                className="rounded-xl!"
-              >
-                Edit
-              </Button>
+              <>
+                <Button
+                  icon={<Pencil size={14} />}
+                  onClick={onEdit}
+                  className="rounded-xl!"
+                >
+                  Edit
+                </Button>
+                <Button
+                  type="primary"
+                  danger
+                  icon={<LogOut size={14} />}
+                  onClick={onLogout}
+                  className="rounded-xl! bg-slate-900! hover:bg-red-900!"
+                >
+                  Logout
+                </Button>
+              </>
             )}
-            <Button
-              type="primary"
-              danger
-              icon={<LogOut size={14} />}
-              onClick={onLogout}
-              className="rounded-xl! bg-slate-900! hover:bg-red-900!"
-            >
-              Logout
-            </Button>
           </div>
         </div>
 
