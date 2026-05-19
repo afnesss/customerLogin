@@ -58,7 +58,7 @@ const getAddressLines = (address: {
 };
 
 const cardClassName =
-  "rounded-3xl! border-white/70! bg-white/90! shadow-lg! backdrop-blur mb-5!";
+  "rounded-3xl! border-white/70! bg-white/90! shadow-lg! backdrop-blur";
 
 const ProfilePage = () => {
   const { user, logout } = useAuth();
@@ -86,8 +86,14 @@ const ProfilePage = () => {
     );
   }
 
-  const { customer_id, last_change, personal_information, state } =
-    user as User;
+  const {
+    customer_id,
+    last_change,
+    personal_information,
+    state,
+    password,
+    social_network_credentials,
+  } = user as User;
   const { address, agreement } =
     personal_information as CustomerPersonalInformation;
   const addressLines = getAddressLines(address);
@@ -98,7 +104,7 @@ const ProfilePage = () => {
 
   return (
     <main className="relative min-h-screen bg-blue-50 px-4 py-5 ">
-      <div className="mx-auto w-full max-w-6xl space-y-3">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
         <Card className={cardClassName}>
           <Space orientation="vertical" size={24} className="w-full">
             <div className="flex flex-col">
@@ -154,7 +160,7 @@ const ProfilePage = () => {
           </Space>
         </Card>
 
-        <Row gutter={[16, 16]} align="stretch">
+        <Row gutter={[16, 0]} align="stretch">
           <Col xs={24} xl={16} className="flex">
             <Card className={`${cardClassName} h-full! w-full`}>
               <Space orientation="vertical" size={15} className="w-full">
@@ -178,12 +184,20 @@ const ProfilePage = () => {
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <InfoBox
+                    label="Pre-nominals"
+                    value={personal_information.pre_nominals}
+                  />
+                  <InfoBox
                     label="First Name"
                     value={personal_information.first_name}
                   />
                   <InfoBox
                     label="Last Name"
                     value={personal_information.last_name}
+                  />
+                  <InfoBox
+                    label="Post-nominals"
+                    value={personal_information.post_nominals}
                   />
                   <InfoBox
                     label="Salutation"
@@ -207,38 +221,12 @@ const ProfilePage = () => {
                     label="Language"
                     value={personal_information.language_id}
                   />
+                  <InfoBox
+                    label="Photo URL"
+                    value={personal_information.photo_url}
+                    breakAll
+                  />
                 </div>
-
-                <Card
-                  size="small"
-                  title="System Details"
-                  className="rounded-2xl!"
-                >
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <InfoBox
-                      label="Customer ID"
-                      value={customer_id}
-                      noWrap
-                      variant="secondary"
-                    />
-                    <InfoBox
-                      label="Last Change"
-                      value={last_change}
-                      variant="secondary"
-                    />
-                    <InfoBox
-                      label="Store ID"
-                      value={personal_information.store_id}
-                      noWrap
-                      variant="secondary"
-                    />
-                    <InfoBox
-                      label="Country"
-                      value={address.country_code?.toUpperCase()}
-                      variant="secondary"
-                    />
-                  </div>
-                </Card>
               </Space>
             </Card>
           </Col>
@@ -248,70 +236,131 @@ const ProfilePage = () => {
               <Space orientation="vertical" size={15} className="w-full">
                 <div>
                   <Title level={4} className="mb-1! text-slate-950!">
-                    Agreements
+                    System Info
                   </Title>
                   <Paragraph className="m-0! text-slate-500!">
-                    Compact consent overview.
+                    Internal and integration metadata.
                   </Paragraph>
                 </div>
 
-                <div className="space-y-2">
-                  {[
-                    ["GTC", formatAgreementValue(agreement.agreement_gtc)],
-                    [
-                      "Profiling",
-                      formatAgreementValue(agreement.agreement_profiling),
-                    ],
-                    [
-                      "Marketing",
-                      formatAgreementValue(
-                        agreement.agreement_marketing_communication,
-                      ),
-                    ],
-                  ].map(([label, value]) => (
-                    <div
-                      key={label}
-                      className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-2.5"
-                    >
-                      <Text className="text-sm! text-slate-700!">{label}</Text>
-                      <Text strong>{value}</Text>
-                    </div>
-                  ))}
-                </div>
-
-                <Card
-                  size="small"
-                  title="Custom Agreements"
-                  className="rounded-2xl!"
-                >
-                  {agreement.custom_agreements.length === 0 ? (
-                    <Empty
-                      image={Empty.PRESENTED_IMAGE_SIMPLE}
-                      description="No custom agreements"
+                <div className="grid grid-cols-1 gap-3">
+                  <InfoBox
+                    label="Customer ID"
+                    value={customer_id}
+                    noWrap
+                    variant="secondary"
+                  />
+                  <InfoBox
+                    label="Last Change"
+                    value={last_change}
+                    variant="secondary"
+                  />
+                  <InfoBox
+                    label="Store ID"
+                    value={personal_information.store_id}
+                    noWrap
+                    variant="secondary"
+                  />
+                  <InfoBox
+                    label="Country"
+                    value={address.country_code?.toUpperCase()}
+                    variant="secondary"
+                  />
+                  {password && (
+                    <InfoBox
+                      label="Password"
+                      value={password}
+                      breakAll
+                      variant="secondary"
                     />
-                  ) : (
-                    <div className="space-y-3">
-                      {agreement.custom_agreements.map((item) => (
-                        <InfoBox
-                          key={item.agreement_id}
-                          label="Agreement ID"
-                          value={item.agreement_id}
-                          noWrap
-                          variant="secondary"
-                          trailing={
-                            <Tag className="m-0! rounded-full self-start">
-                              {formatAgreementValue(item.agreement_value)}
-                            </Tag>
-                          }
-                        />
-                      ))}
-                    </div>
                   )}
-                </Card>
+                  {social_network_credentials?.social_network_id && (
+                    <InfoBox
+                      label="Social Network"
+                      value={social_network_credentials?.social_network_id}
+                      variant="secondary"
+                    />
+                  )}
+                  {social_network_credentials?.social_network_token && (
+                    <InfoBox
+                      label="Social Token"
+                      value={social_network_credentials?.social_network_token}
+                      breakAll
+                      variant="secondary"
+                    />
+                  )}
+                </div>
               </Space>
             </Card>
           </Col>
         </Row>
+
+        <Card className={cardClassName}>
+          <Space orientation="vertical" size={15} className="w-full">
+            <div>
+              <Title level={4} className="mb-1! text-slate-950!">
+                Agreements
+              </Title>
+              <Paragraph className="m-0! text-slate-500!">
+                Compact consent overview.
+              </Paragraph>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+              {[
+                ["GTC", formatAgreementValue(agreement.agreement_gtc)],
+                [
+                  "Profiling",
+                  formatAgreementValue(agreement.agreement_profiling),
+                ],
+                [
+                  "Marketing",
+                  formatAgreementValue(
+                    agreement.agreement_marketing_communication,
+                  ),
+                ],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-2.5"
+                >
+                  <Text className="text-sm! text-slate-700!">{label}</Text>
+                  <Text strong>{value}</Text>
+                </div>
+              ))}
+            </div>
+
+            <Card
+              size="small"
+              title="Custom Agreements"
+              className="rounded-2xl!"
+            >
+              {agreement.custom_agreements.length === 0 ? (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="No custom agreements"
+                />
+              ) : (
+                <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                  {agreement.custom_agreements.map((item) => (
+                    <InfoBox
+                      key={item.agreement_id}
+                      label="Agreement ID"
+                      value={item.agreement_id}
+                      noWrap
+                      variant="secondary"
+                      trailing={
+                        <Tag className="m-0! rounded-full self-start">
+                          {formatAgreementValue(item.agreement_value)}
+                        </Tag>
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </Card>
+          </Space>
+        </Card>
       </div>
     </main>
   );
