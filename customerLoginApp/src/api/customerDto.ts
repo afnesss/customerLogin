@@ -3,6 +3,11 @@ export type CustomerAgreement = {
   agreement_value: number;
 };
 
+export type SocialNetworkCredentials = {
+  social_network_id: string;
+  social_network_token: string;
+};
+
 export type CustomerAddress = {
   address1: string;
   address2: string;
@@ -27,11 +32,14 @@ export type CustomerPersonalInformation = {
   gender: number;
   first_name: string;
   last_name: string;
+  pre_nominals: string;
+  post_nominals: string;
   birthdate: string;
   email: string;
   phone: string;
   language_id: string;
   store_id: string;
+  photo_url: string;
   address: CustomerAddress;
   agreement: CustomerConsent;
   salutation: string;
@@ -42,4 +50,6 @@ export type User = {
   personal_information: CustomerPersonalInformation;
   last_change: string;
   state: number;
+  password?: string;
+  social_network_credentials?: SocialNetworkCredentials;
 };
