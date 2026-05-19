@@ -1,20 +1,10 @@
-import {
-  Button,
-  Card,
-
-const { Paragraph, Text, Title } = Typography;
-  Descriptions,
-  Empty,
-  Row,
-  Space,
-  Tag,
-  Typography,
-} from "antd";
+import { Button, Card, Col, Empty, Row, Space, Tag, Typography } from "antd";
 import { LogOut, Pencil } from "lucide-react";
-import type { User } from "../api/customerDto";
+import type { CustomerPersonalInformation, User } from "../api/customerDto";
 import InfoBox from "./InfoBox";
 import { useAuth } from "../context/AuthContext";
-import InfoBox from "./InfoBox";
+
+const { Paragraph, Text, Title } = Typography;
 
 const formatAgreementValue = (value: number) => {
   if (value === 1) {
@@ -26,6 +16,18 @@ const formatAgreementValue = (value: number) => {
   }
 
   return String(value);
+};
+
+const formatGenderValue = (value: number) => {
+  if (value === 2) {
+    return "Male";
+  }
+
+  if (value === 1) {
+    return "Female";
+  }
+
+  return "Not specified";
 };
 
 const getAddressLines = (address: {
@@ -84,8 +86,10 @@ const ProfilePage = () => {
     );
   }
 
-  const { customer_id, last_change, personal_information, state } = user;
-  const { address, agreement } = personal_information;
+  const { customer_id, last_change, personal_information, state } =
+    user as User;
+  const { address, agreement } =
+    personal_information as CustomerPersonalInformation;
   const addressLines = getAddressLines(address);
 
   const handleLogout = () => {
@@ -123,6 +127,7 @@ const ProfilePage = () => {
                   type="primary"
                   danger
                   icon={<LogOut size={16} />}
+                  size="large"
                   onClick={handleLogout}
                   className="rounded-2xl! bg-slate-900! hover:bg-red-900!"
                 >
@@ -131,41 +136,46 @@ const ProfilePage = () => {
               </Space>
             </div>
 
-            <div className="rounded-2xl bg-slate-50 px-4 py-4">
-              <div className="flex items-start gap-3">
-                <MapPin size={18} className="mt-0.5 text-slate-700" />
-                <div>
-                  <h3 className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">
-                    Address
-                  </h3>
-                  <div className="mt-2 space-y-1 text-sm leading-5 text-slate-700">
+            <Card
+              size="small"
+              title="Address"
+              className="rounded-2xl! bg-slate-50!"
+              variant="borderless"
+            >
+              <div className="space-y-1">
                     {addressLines.map((line) => (
-                      <p key={line}>{line}</p>
+                  <Text key={line} className="block text-slate-700!">
+                    {line}
+                  </Text>
                     ))}
+              </div>
+            </Card>
+          </Space>
+        </Card>
+
+        <Row gutter={[16, 16]} align="stretch">
+          <Col xs={24} xl={16} className="flex">
+            <Card className={`${cardClassName} h-full! w-full`}>
+              <Space orientation="vertical" size={20} className="w-full">
+                <div className="flex flex-col ">
+                  <div className="flex flex-row items-center justify-between">
+                    <Title level={4} className="mb-1! text-slate-950!">
+                      Personal Information
+                    </Title>
+                    <Tag
+                      color="green"
+                      className="m-0! rounded-full px-3 py-2 text-xs! w-fit!"
+                    >
+                      State: {state}
+                    </Tag>
                   </div>
+                  <Paragraph className="m-0! text-slate-500!">
+                    Primary customer details first. System identifiers stay
+                    secondary.
+                  </Paragraph>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <section className="rounded-3xl border border-white/70 bg-white/90 p-5 shadow-[0_20px_70px_rgba(15,23,42,0.14)] backdrop-blur md:p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-semibold text-slate-950">
-                  Personal Information
-                </h2>
-                <p className="text-sm text-slate-500">
-                  Primary customer details first. System identifiers stay secondary.
-                </p>
-              </div>
-              <div className="inline-flex w-fit rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
-                State: {state}
-              </div>
-            </div>
-
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <InfoBox
                 label="First Name"
                 value={personal_information.first_name}
@@ -174,6 +184,10 @@ const ProfilePage = () => {
                 label="Last Name"
                 value={personal_information.last_name}
               />
+                  <InfoBox
+                    label="Salutation"
+                    value={personal_information.salutation}
+                  />
               <InfoBox
                 label="Email"
                 value={personal_information.email}
@@ -186,13 +200,7 @@ const ProfilePage = () => {
               />
               <InfoBox
                 label="Gender"
-                value={
-                  personal_information.gender === 2
-                    ? "Male"
-                    : personal_information.gender === 1
-                      ? "Female"
-                      : "Not specified"
-                }
+                    value={formatGenderValue(personal_information.gender)}
               />
               <InfoBox
                 label="Language"
