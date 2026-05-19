@@ -3,8 +3,8 @@ import type { FormInstance } from "antd";
 import { Globe, House, Plus } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { countryOptions, getCountryLabel } from "../countryOptions";
-import type { ProfileFormValues } from "../profileFormTypes";
+import { countryOptions, getCountryLabel } from "../../../utils/countryOptions";
+import type { ProfileFormValues } from "../../../types/profileFormTypes";
 
 const { Text } = Typography;
 

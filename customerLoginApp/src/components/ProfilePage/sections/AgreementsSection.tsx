@@ -1,7 +1,7 @@
 import { Card, Empty, Space, Tag, Typography } from "antd";
 import InfoBox from "../../InfoBox";
 import type { CustomerConsent } from "../../../types/customerDto";
-import { formatAgreementValue } from "../heplerFunctions";
+import { formatAgreementValue } from "../../../utils/heplerFunctions";
 
 const { Text, Title } = Typography;
 
