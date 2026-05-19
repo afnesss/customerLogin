@@ -1,5 +1,5 @@
 import { api } from "./clientConfig";
-import type { CustomerPersonalInformation } from "./customerDto";
+import type { CustomerPersonalInformation } from "../types/customerDto";
 
 export const updateUser = async (
   customerId: string,
