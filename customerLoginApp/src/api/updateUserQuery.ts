@@ -11,6 +11,7 @@ export const updateUser = async (
         ...personalInfo,
         address: {
           ...personalInfo.address,
+          country_code: personalInfo.address.country_code?.toLowerCase(),
         },
         agreement: {
           ...personalInfo.agreement,
