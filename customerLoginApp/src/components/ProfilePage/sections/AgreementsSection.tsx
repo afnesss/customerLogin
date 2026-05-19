@@ -54,7 +54,6 @@ const AgreementsSection = ({
                   label="Agreement ID"
                   value={item.agreement_id}
                   noWrap
-                  variant="secondary"
                   trailing={
                     <Tag className="m-0! rounded-full self-start">
                       {formatAgreementValue(item.agreement_value)}
