@@ -302,27 +302,19 @@ const ProfilePage = () => {
       <main className="relative min-h-screen bg-blue-50 px-4 py-5">
         <div className="mx-auto w-full max-w-6xl space-y-3">
           <Row gutter={[16, 16]} align="stretch">
-            <Col xs={24} xl={16} className="flex">
-              <PersonalInformationSection
-                cardClassName={cardClassName}
-                form={profileForm}
-                personalFields={personalFields}
-                personalInformation={personal_information}
-                isEditing={isEditingProfile}
-                isSaving={isSavingProfile}
-                onEdit={() => setIsEditingProfile(true)}
-                onCancel={handleCancelProfile}
-                onLogout={handleLogout}
-                onSave={handleSaveProfile}
-              />
-            </Col>
-
-            <Col xs={24} xl={8} className="flex">
-              <SystemInfoSection
-                cardClassName={cardClassName}
-                systemFields={systemFields}
-              />
-            </Col>
+            <PersonalInformationSection
+              cardClassName={cardClassName}
+              form={profileForm}
+              personalFields={personalFields}
+              personalInformation={personal_information}
+              lastChange={last_change}
+              isEditing={isEditingProfile}
+              isSaving={isSavingProfile}
+              onEdit={() => setIsEditingProfile(true)}
+              onCancel={handleCancelProfile}
+              onLogout={handleLogout}
+              onSave={handleSaveProfile}
+            />
           </Row>
 
           <AgreementsSection

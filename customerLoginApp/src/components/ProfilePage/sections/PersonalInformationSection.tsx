@@ -28,7 +28,13 @@ import type { ProfileFormValues } from "../profileFormTypes";
 import AddressEditor from "./AddressEditor";
 import { type ProfileFieldConfig } from "./profileSectionShared";
 
-const { Paragraph, Title } = Typography;
+const { Text, Title } = Typography;
+
+const genderOptions = [
+  { label: "Not specified", value: 0 },
+  { label: "Female", value: 1 },
+  { label: "Male", value: 2 },
+];
 
 type PersonalInformationSectionProps = {
   cardClassName: string;
@@ -114,7 +120,7 @@ const PersonalInformationSection = ({
     .toUpperCase();
 
   return (
-  <Card className={`${cardClassName} h-full! w-full`}>
+    <Card className={`${cardClassName} h-full! w-full`}>
       <Space orientation="vertical" size={20} className="w-full">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-center gap-4">
@@ -126,7 +132,7 @@ const PersonalInformationSection = ({
               {initials || "?"}
             </Avatar>
             <div className="min-w-0">
-          <Title level={4} className="mb-1! text-slate-950!">
+              <Title level={4} className="mb-1! text-slate-950!">
                 {personalInformation.first_name} {personalInformation.last_name}
               </Title>
               {subtitle ? (
@@ -141,35 +147,209 @@ const PersonalInformationSection = ({
                     year: "numeric",
                   }).format(new Date(lastChange))}
                 </Text>
-            ) : null}
-        </div>
-      </div>
+              ) : null}
+            </div>
+          </div>
 
-      <Form form={personalForm} layout="vertical" onFinish={onSave}>
-        {renderInfoBoxGrid(personalFields, isEditingPersonal)}
-
-        {isEditingPersonal ? (
-          <Space className="mt-4">
+          <div className="flex items-center gap-3 self-start">
+            {isEditing ? (
+              <>
+                <Button
+                  type="primary"
+                  loading={isSaving}
+                  onClick={() => void form.submit()}
+                  className="rounded-xl!"
+                >
+                  Save changes
+                </Button>
+                <Button
+                  icon={<X size={14} />}
+                  onClick={onCancel}
+                  className="rounded-xl!"
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <Button
+                icon={<Pencil size={14} />}
+                onClick={onEdit}
+                className="rounded-xl!"
+              >
+                Edit
+              </Button>
+            )}
             <Button
               type="primary"
-              htmlType="submit"
-              loading={isSavingPersonal}
-              className="rounded-xl!"
+              danger
+              icon={<LogOut size={14} />}
+              onClick={onLogout}
+              className="rounded-xl! bg-slate-900! hover:bg-red-900!"
             >
-              Save changes
+              Logout
             </Button>
-            <Button
-              icon={<X size={14} />}
-              onClick={onCancel}
-              className="rounded-xl!"
-            >
-              Cancel
-            </Button>
-          </Space>
-        ) : null}
-      </Form>
-    </Space>
-  </Card>
-);
+          </div>
+        </div>
+
+        <Form form={form} layout="vertical" onFinish={onSave}>
+          <div className="border-t border-slate-200 pt-5">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-0">
+              <section className="lg:pr-8">
+                {isEditing && (
+                  <>
+                    <Text className="text-xs! font-semibold! uppercase tracking-wide text-slate-500!">
+                      Personal
+                    </Text>
+                    <div className="mt-4 space-y-4">
+                      {[
+                        {
+                          icon: <User size={18} />,
+                          label: "First Name",
+                          fieldName: "first_name" as const,
+                          rules: [
+                            { required: true, message: "Enter first name" },
+                          ],
+                        },
+                        {
+                          icon: <User size={18} />,
+                          label: "Last Name",
+                          fieldName: "last_name" as const,
+                          rules: [
+                            { required: true, message: "Enter last name" },
+                          ],
+                        },
+                      ].map((item) => (
+                        <div
+                          key={item.fieldName}
+                          className="grid grid-cols-[24px_78px_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[24px_100px_minmax(0,1fr)]"
+                        >
+                          <span className="pt-0.5 text-slate-400">
+                            {item.icon}
+                          </span>
+                          <Text className="font-medium! text-slate-500!">
+                            {item.label}
+                          </Text>
+                          <Form.Item
+                            name={item.fieldName}
+                            rules={item.rules}
+                            className="mb-0!"
+                          >
+                            <Input
+                              size="middle"
+                              className="rounded-xl! shadow-none!"
+                            />
+                          </Form.Item>
+                        </div>
+                      ))}
+                      <div className="grid grid-cols-[24px_78px_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[24px_100px_minmax(0,1fr)]">
+                        <span className="pt-0.5 text-slate-400">
+                          <Users size={18} />
+                        </span>
+                        <Text className="font-medium! text-slate-500!">
+                          Gender
+                        </Text>
+                        <Form.Item name="gender" className="mb-0!">
+                          <Select
+                            options={genderOptions}
+                            size="middle"
+                            className="w-full rounded-xl!"
+                          />
+                        </Form.Item>
+                      </div>
+                      <div className="grid grid-cols-[24px_78px_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[24px_100px_minmax(0,1fr)]">
+                        <span className="pt-0.5 text-slate-400">
+                          <Calendar size={18} />
+                        </span>
+                        <Text className="font-medium! text-slate-500!">
+                          Birthdate
+                        </Text>
+                        <Form.Item name="birthdate" className="mb-0!">
+                          <Input
+                            type="date"
+                            size="middle"
+                            className="rounded-xl! shadow-none!"
+                          />
+                        </Form.Item>
+                      </div>
+                    </div>
+                  </>
+                )}
+                <div className={isEditing ? "mt-6" : ""}>
+                  <Text className="text-xs! font-semibold! uppercase tracking-wide text-slate-500!">
+                    Contact
+                  </Text>
+                  <div className="mt-4 space-y-4">
+                    {contactItems.map((item) => (
+                      <div
+                        key={item.label}
+                        className="grid grid-cols-[24px_78px_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[24px_100px_minmax(0,1fr)]"
+                      >
+                        <span className="pt-0.5 text-slate-400">
+                          {item.icon}
+                        </span>
+                        <Text className="font-medium! text-slate-500!">
+                          {item.label}
+                        </Text>
+                        {isEditing ? (
+                          <Form.Item name={item.fieldName} className="mb-0!">
+                            <Input
+                              size="middle"
+                              className="rounded-xl! shadow-none!"
+                            />
+                          </Form.Item>
+                        ) : (
+                          <Text className="break-all text-slate-900!">
+                            {item.value}
+                          </Text>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              <section className="border-t border-slate-200 pt-6 lg:border-t-0 lg:border-l lg:pl-8 lg:pt-0">
+                <div className="flex items-center justify-between gap-3">
+                  <Text className="text-xs! font-semibold! uppercase tracking-wide text-slate-500!">
+                    Address
+                  </Text>
+                </div>
+                <AddressEditor form={form} isEditing={isEditing} />
+              </section>
+            </div>
+
+            <section className="mt-6 border-t border-slate-200 pt-5">
+              <Text className="text-xs! font-semibold! uppercase tracking-wide text-slate-500!">
+                Preferences
+              </Text>
+              <div className="mt-4">
+                <div className="flex items-start gap-3">
+                  <span className="pt-0.5 text-slate-400">
+                    <MessageSquareText size={18} />
+                  </span>
+                  <Text className="font-medium! text-slate-500!">
+                    Salutation:
+                  </Text>
+                  {isEditing ? (
+                    <Form.Item name="salutation" className="mb-0! flex-1">
+                      <Input
+                        size="middle"
+                        className="rounded-xl! shadow-none!"
+                      />
+                    </Form.Item>
+                  ) : (
+                    <Text className="break-all text-slate-900!">
+                      {personalInformation.salutation || "Not specified"}
+                    </Text>
+                  )}
+                </div>
+              </div>
+            </section>
+          </div>
+        </Form>
+      </Space>
+    </Card>
+  );
+};
 
 export default PersonalInformationSection;
