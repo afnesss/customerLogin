@@ -3,7 +3,7 @@ import InfoBox from "../../InfoBox";
 import type { CustomerConsent } from "../../../types/customerDto";
 import { formatAgreementValue } from "../heplerFunctions";
 
-const { Paragraph, Text, Title } = Typography;
+const { Text, Title } = Typography;
 
 type AgreementsSectionProps = {
   agreement: CustomerConsent;

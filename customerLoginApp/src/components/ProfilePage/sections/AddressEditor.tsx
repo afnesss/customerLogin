@@ -124,17 +124,17 @@ const AddressEditor = ({ form, isEditing }: AddressEditorProps) => {
             showSearch
             options={countryOptions}
             optionFilterProp="label"
-            className="w-full"
+            className="w-full rounded-xl! "
             size="middle"
           />
         </Form.Item>
 
         <Form.Item label={fieldLabel("ZIP")} name="zip" className="mb-0!">
-          <Input size="middle" />
+          <Input size="middle" className="rounded-xl!" />
         </Form.Item>
 
-        <Form.Item label={fieldLabel("City")} name="city" className="mb-0!">
-          <Input size="middle" />
+        <Form.Item label={fieldLabel("City")} name="city" className="mb-0! ">
+          <Input size="middle" className="rounded-xl!" />
         </Form.Item>
 
         <Form.Item
@@ -142,7 +142,7 @@ const AddressEditor = ({ form, isEditing }: AddressEditorProps) => {
           name="address1"
           className="mb-0! sm:col-span-2"
         >
-          <Input size="middle" />
+          <Input size="middle" className="rounded-xl!" />
         </Form.Item>
 
         {addressLineKeys
