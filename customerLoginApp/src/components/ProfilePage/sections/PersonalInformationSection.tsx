@@ -82,6 +82,14 @@ const personalEditFields: PersonalEditField[] = [
     control: (
       <Input type="date" size="middle" className="rounded-xl! shadow-none!" />
     ),
+    rules: [
+      {
+        validator: (_: unknown, value: string) =>
+          !value || new Date(value) <= new Date()
+            ? Promise.resolve()
+            : Promise.reject(new Error("Birthdate cannot be in the future")),
+      },
+    ],
   },
 ];
 
@@ -119,6 +127,10 @@ const PersonalInformationSection = ({
       label: "Email",
       value: personalInformation.email,
       fieldName: "email" as const,
+      rules: [
+        { required: true, message: "Enter email" },
+        { type: "email" as const, message: "Enter a valid email" },
+      ],
     },
     {
       icon: <Phone size={18} />,
@@ -126,6 +138,7 @@ const PersonalInformationSection = ({
       value: personalInformation.phone,
       displayValue: formatPhone(personalInformation.phone),
       fieldName: "phone" as const,
+      rules: [{ required: true, message: "Enter phone number" }],
     },
     {
       icon: <Globe size={18} />,
@@ -133,6 +146,7 @@ const PersonalInformationSection = ({
       value: personalInformation.language_id,
       displayValue: formatLanguage(personalInformation.language_id),
       fieldName: "language_id" as const,
+      rules: undefined,
     },
   ].filter((item) => isEditing || (item.value && item.value.trim() !== ""));
 
@@ -257,7 +271,11 @@ const PersonalInformationSection = ({
                         label={item.label}
                       >
                         {isEditing ? (
-                          <Form.Item name={item.fieldName} className="mb-0!">
+                          <Form.Item
+                            name={item.fieldName}
+                            rules={item.rules}
+                            className="mb-0!"
+                          >
                             <Input
                               size="middle"
                               className="rounded-xl! shadow-none!"
@@ -265,7 +283,9 @@ const PersonalInformationSection = ({
                           </Form.Item>
                         ) : (
                           <Text className="break-all text-slate-900!">
-                            {"displayValue" in item ? item.displayValue : item.value}
+                            {"displayValue" in item
+                              ? item.displayValue
+                              : item.value}
                           </Text>
                         )}
                       </FieldRow>
