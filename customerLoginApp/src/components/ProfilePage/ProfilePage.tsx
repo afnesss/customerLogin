@@ -2,39 +2,21 @@ import { useEffect, useState } from "react";
 import { Col, Form, Row, message } from "antd";
 import { updateUser } from "../../api/updateUserQuery";
 import type {
-  CustomerAddress,
   CustomerPersonalInformation,
   User,
 } from "../../types/customerDto";
 import { useAuth } from "../../context/AuthContext";
 import { formatGenderValue } from "./heplerFunctions";
+import type { ProfileFormValues } from "./profileFormTypes";
 import AgreementsSection from "./sections/AgreementsSection";
 import PersonalInformationSection from "./sections/PersonalInformationSection";
 import ProfileEmptyState from "./ProfileEmptyState";
-import ProfileHeaderCard from "./sections/ProfileHeaderCard";
 import { type ProfileFieldConfig } from "./sections/profileSectionShared";
 import SystemInfoSection from "./SystemInfoSection";
 
-type PersonalInfoFormValues = Pick<
-  CustomerPersonalInformation,
-  | "pre_nominals"
-  | "first_name"
-  | "last_name"
-  | "post_nominals"
-  | "salutation"
-  | "email"
-  | "phone"
-  | "birthdate"
-  | "gender"
-  | "language_id"
-  | "photo_url"
->;
-
-type AddressFormValues = CustomerAddress;
-
-const getPersonalFormValues = (
+const getProfileFormValues = (
   personalInformation: CustomerPersonalInformation,
-): PersonalInfoFormValues => ({
+): ProfileFormValues => ({
   pre_nominals: personalInformation.pre_nominals,
   first_name: personalInformation.first_name,
   last_name: personalInformation.last_name,
@@ -46,6 +28,7 @@ const getPersonalFormValues = (
   gender: personalInformation.gender,
   language_id: personalInformation.language_id,
   photo_url: personalInformation.photo_url,
+  ...personalInformation.address,
 });
 
 const cardClassName =
@@ -56,23 +39,17 @@ const formItemClassName = "mb-0!";
 const ProfilePage = () => {
   const { user, logout, setUser } = useAuth();
   const [messageApi, contextHolder] = message.useMessage();
-  const [personalForm] = Form.useForm<PersonalInfoFormValues>();
-  const [addressForm] = Form.useForm<AddressFormValues>();
-  const [isEditingPersonal, setIsEditingPersonal] = useState(false);
-  const [isEditingAddress, setIsEditingAddress] = useState(false);
-  const [isSavingPersonal, setIsSavingPersonal] = useState(false);
-  const [isSavingAddress, setIsSavingAddress] = useState(false);
+  const [profileForm] = Form.useForm<ProfileFormValues>();
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
 
   useEffect(() => {
     if (!user) {
       return;
     }
 
-    personalForm.setFieldsValue(
-      getPersonalFormValues(user.personal_information),
-    );
-    addressForm.setFieldsValue(user.personal_information.address);
-  }, [addressForm, personalForm, user]);
+    profileForm.setFieldsValue(getProfileFormValues(user.personal_information));
+  }, [profileForm, user]);
 
   if (!user) {
     return (
@@ -87,12 +64,11 @@ const ProfilePage = () => {
     customer_id,
     last_change,
     personal_information,
-    state,
     password,
     social_network_credentials,
   } = user as User;
   const { address, agreement } = personal_information;
-  const personalFields: ProfileFieldConfig<PersonalInfoFormValues>[] = [
+  const personalFields: ProfileFieldConfig<ProfileFormValues>[] = [
     {
       key: "pre_nominals",
       label: "Pre-nominals",
@@ -199,6 +175,7 @@ const ProfilePage = () => {
         className: formItemClassName,
       },
     },
+
     {
       key: "photo_url",
       label: "Photo URL",
@@ -210,28 +187,6 @@ const ProfilePage = () => {
       },
     },
   ];
-  const addressFields: ProfileFieldConfig<AddressFormValues>[] = [
-    { key: "address1", label: "Address Line 1", value: address.address1 },
-    { key: "address2", label: "Address Line 2", value: address.address2 },
-    { key: "address3", label: "Address Line 3", value: address.address3 },
-    { key: "address4", label: "Address Line 4", value: address.address4 },
-    { key: "address5", label: "Address Line 5", value: address.address5 },
-    { key: "address6", label: "Address Line 6", value: address.address6 },
-    { key: "address7", label: "Address Line 7", value: address.address7 },
-    { key: "zip", label: "ZIP", value: address.zip },
-    { key: "city", label: "City", value: address.city },
-    {
-      key: "country_code",
-      label: "Country",
-      value: address.country_code?.toUpperCase(),
-    },
-  ].map((field) => ({
-    ...field,
-    formItemProps: {
-      name: field.key as keyof AddressFormValues,
-      className: formItemClassName,
-    },
-  }));
   const systemFields: ProfileFieldConfig<Record<string, never>>[] = [
     {
       key: "customer_id",
@@ -255,12 +210,7 @@ const ProfilePage = () => {
       noWrap: true,
       variant: "secondary",
     },
-    {
-      key: "country_code",
-      label: "Country",
-      value: address.country_code?.toUpperCase(),
-      variant: "secondary",
-    },
+
     {
       key: "password",
       label: "Password",
@@ -282,32 +232,13 @@ const ProfilePage = () => {
       variant: "secondary",
     },
   ];
-  const visibleAddressFields = isEditingAddress
-    ? addressFields
-    : addressFields.filter((field) => {
-        if (field.value === null || field.value === undefined) {
-          return false;
-        }
-
-        if (typeof field.value === "string") {
-          return field.value.trim() !== "";
-        }
-
-        return true;
-      });
-
   const handleLogout = () => {
     void logout();
   };
 
-  const handleCancelPersonal = () => {
-    personalForm.setFieldsValue(getPersonalFormValues(personal_information));
-    setIsEditingPersonal(false);
-  };
-
-  const handleCancelAddress = () => {
-    addressForm.setFieldsValue(address);
-    setIsEditingAddress(false);
+  const handleCancelProfile = () => {
+    profileForm.setFieldsValue(getProfileFormValues(personal_information));
+    setIsEditingProfile(false);
   };
 
   const saveProfile = async (
@@ -321,41 +252,47 @@ const ProfilePage = () => {
     });
   };
 
-  const handleSavePersonal = async (values: PersonalInfoFormValues) => {
-    setIsSavingPersonal(true);
+  const handleSaveProfile = async (values: ProfileFormValues) => {
+    setIsSavingProfile(true);
 
     try {
+      const {
+        address1,
+        address2,
+        address3,
+        address4,
+        address5,
+        address6,
+        address7,
+        zip,
+        city,
+        country_code,
+        ...nextPersonalValues
+      } = values;
       const nextPersonalInformation: CustomerPersonalInformation = {
         ...personal_information,
-        ...values,
+        ...nextPersonalValues,
+        address: {
+          address1,
+          address2,
+          address3,
+          address4,
+          address5,
+          address6,
+          address7,
+          zip,
+          city,
+          country_code,
+        },
       };
 
       await saveProfile(nextPersonalInformation);
-      setIsEditingPersonal(false);
-      messageApi.success("Personal information updated");
+      setIsEditingProfile(false);
+      messageApi.success("Profile updated");
     } catch {
-      messageApi.error("Failed to update personal information");
+      messageApi.error("Failed to update profile");
     } finally {
-      setIsSavingPersonal(false);
-    }
-  };
-
-  const handleSaveAddress = async (values: AddressFormValues) => {
-    setIsSavingAddress(true);
-
-    try {
-      const nextPersonalInformation: CustomerPersonalInformation = {
-        ...personal_information,
-        address: values,
-      };
-
-      await saveProfile(nextPersonalInformation);
-      setIsEditingAddress(false);
-      messageApi.success("Address updated");
-    } catch {
-      messageApi.error("Failed to update address");
-    } finally {
-      setIsSavingAddress(false);
+      setIsSavingProfile(false);
     }
   };
 
@@ -364,31 +301,19 @@ const ProfilePage = () => {
       {contextHolder}
       <main className="relative min-h-screen bg-blue-50 px-4 py-5">
         <div className="mx-auto w-full max-w-6xl space-y-3">
-          <ProfileHeaderCard
-            cardClassName={cardClassName}
-            personalName={`${personal_information.first_name} ${personal_information.last_name}`}
-            addressForm={addressForm}
-            addressFields={visibleAddressFields}
-            isEditingAddress={isEditingAddress}
-            isSavingAddress={isSavingAddress}
-            onEditAddress={() => setIsEditingAddress(true)}
-            onCancelAddress={handleCancelAddress}
-            onSaveAddress={handleSaveAddress}
-            onLogout={handleLogout}
-          />
-
           <Row gutter={[16, 16]} align="stretch">
             <Col xs={24} xl={16} className="flex">
               <PersonalInformationSection
                 cardClassName={cardClassName}
-                personalForm={personalForm}
+                form={profileForm}
                 personalFields={personalFields}
-                isEditingPersonal={isEditingPersonal}
-                isSavingPersonal={isSavingPersonal}
-                state={state}
-                onEdit={() => setIsEditingPersonal(true)}
-                onCancel={handleCancelPersonal}
-                onSave={handleSavePersonal}
+                personalInformation={personal_information}
+                isEditing={isEditingProfile}
+                isSaving={isSavingProfile}
+                onEdit={() => setIsEditingProfile(true)}
+                onCancel={handleCancelProfile}
+                onLogout={handleLogout}
+                onSave={handleSaveProfile}
               />
             </Col>
 
