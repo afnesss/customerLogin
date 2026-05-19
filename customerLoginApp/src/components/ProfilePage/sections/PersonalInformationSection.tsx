@@ -24,7 +24,12 @@ import {
 import type { ReactNode } from "react";
 import type { CustomerPersonalInformation } from "../../../types/customerDto";
 import { getCountryLabel } from "../../../utils/countryOptions";
-import { formatDate, formatGenderValue } from "../../../utils/heplerFunctions";
+import {
+  formatDate,
+  formatGenderValue,
+  formatLanguage,
+  formatPhone,
+} from "../../../utils/heplerFunctions";
 import type { ProfileFormValues } from "../../../types/profileFormTypes";
 import AddressEditor from "./AddressEditor";
 import type { Rule } from "antd/es/form";
@@ -119,12 +124,14 @@ const PersonalInformationSection = ({
       icon: <Phone size={18} />,
       label: "Phone",
       value: personalInformation.phone,
+      displayValue: formatPhone(personalInformation.phone),
       fieldName: "phone" as const,
     },
     {
       icon: <Globe size={18} />,
       label: "Language",
       value: personalInformation.language_id,
+      displayValue: formatLanguage(personalInformation.language_id),
       fieldName: "language_id" as const,
     },
   ].filter((item) => isEditing || (item.value && item.value.trim() !== ""));
@@ -258,7 +265,7 @@ const PersonalInformationSection = ({
                           </Form.Item>
                         ) : (
                           <Text className="break-all text-slate-900!">
-                            {item.value}
+                            {"displayValue" in item ? item.displayValue : item.value}
                           </Text>
                         )}
                       </FieldRow>
