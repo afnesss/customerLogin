@@ -1,7 +1,7 @@
 import { Alert, Button, Card, Form, Input, Space, Typography } from "antd";
+import Cookies from "js-cookie";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCookie } from "../api/clientConfig";
 import { UserLoginError, userLogin } from "../api/loginQuery";
 import { createTokenId } from "../api/tokenQuery";
 import { useAuth } from "../context/AuthContext";
@@ -21,7 +21,7 @@ const LoginForm = () => {
       setIsSubmitting(true);
       setSubmitError(null);
 
-      if (!getCookie("carecloud_token")) {
+      if (!Cookies.get("carecloud_token")) {
         try {
           setIsPreparingToken(true);
           await createTokenId();

@@ -1,5 +1,6 @@
 import axios from "axios";
-import { api, getCookie } from "./clientConfig";
+import Cookies from "js-cookie";
+import { api } from "./clientConfig";
 
 type LoginPayload = {
   login_type: string;
@@ -27,7 +28,7 @@ export const userLogin = async (login: string, password: string) => {
     login_value: login,
     password,
   };
-  const token = getCookie("carecloud_token");
+  const token = Cookies.get("carecloud_token");
 
   try {
     const res = await api.post<LoginResponse>(

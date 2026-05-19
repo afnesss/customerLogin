@@ -1,7 +1,8 @@
-import { api, getCookie } from "./clientConfig";
+import Cookies from "js-cookie";
+import { api } from "./clientConfig";
 
 export const logoutQuery = async () => {
-  const token = getCookie("carecloud_token");
+  const token = Cookies.get("carecloud_token");
 
   if (!token) {
     return null;

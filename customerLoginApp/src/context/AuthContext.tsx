@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getCookie } from "../api/clientConfig";
+import Cookies from "js-cookie";
 import type { User } from "../types/customerDto";
 import { getUserData } from "../api/getUserData";
 import { logoutQuery } from "../api/logoutQuery";
@@ -33,8 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       setUser(null);
-      document.cookie =
-        "carecloud_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      Cookies.remove("carecloud_token", { path: "/" });
       await logoutQuery();
     } catch {
       // ignore logout API failure and still clear local auth state
@@ -44,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const bootstrap = async () => {
       try {
-        if (!getCookie("carecloud_token")) {
+        if (!Cookies.get("carecloud_token")) {
           setUser(null);
           return;
         }

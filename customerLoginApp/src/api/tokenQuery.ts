@@ -1,9 +1,10 @@
-import { api, getCookie } from "./clientConfig";
+import Cookies from "js-cookie";
+import { api } from "./clientConfig";
 
 let createTokenPromise: Promise<string | undefined> | null = null;
 
 export const createTokenId = async () => {
-  const existingToken = getCookie("carecloud_token");
+  const existingToken = Cookies.get("carecloud_token");
 
   if (existingToken) {
     return existingToken;
@@ -31,12 +32,12 @@ export const createTokenId = async () => {
       });
       console.log(response.data);
       const token = response.data.data.token_id;
-      document.cookie =
-        `carecloud_token=${token}; ` +
-        `path=/; ` +
-        `max-age=86400; ` +
-        `secure; ` +
-        `samesite=strict`;
+      Cookies.set("carecloud_token", token, {
+        path: "/",
+        expires: 1,
+        secure: true,
+        sameSite: "strict",
+      });
 
       return token;
     } catch (error) {
