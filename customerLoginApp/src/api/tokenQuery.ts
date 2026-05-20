@@ -1,10 +1,11 @@
-import Cookies from "js-cookie";
+import { getToken, removeToken, setToken } from "../hooks/useToken";
 import { api } from "./clientConfig";
+import { v4 as uuidv4 } from "uuid";
 
 let createTokenPromise: Promise<string | undefined> | null = null;
 
 export const createTokenId = async () => {
-  const existingToken = Cookies.get("carecloud_token");
+  const existingToken = getToken();
 
   if (existingToken) {
     return existingToken;
@@ -18,7 +19,7 @@ export const createTokenId = async () => {
     try {
       const response = await api.post(`/tokens`, {
         device: {
-          device_id: crypto.randomUUID(),
+          device_id: uuidv4(),
           device_system: navigator.platform,
           device_name: "React Web App",
           device_type: "Web",
@@ -32,17 +33,13 @@ export const createTokenId = async () => {
       });
       console.log(response.data);
       const token = response.data.data.token_id;
-      Cookies.set("carecloud_token", token, {
-        path: "/",
-        expires: 1,
-        secure: true,
-        sameSite: "strict",
-      });
+      setToken(token);
 
       return token;
     } catch (error) {
       console.log("get token error: ", error);
-      return undefined;
+      removeToken();
+      return null;
     } finally {
       createTokenPromise = null;
     }

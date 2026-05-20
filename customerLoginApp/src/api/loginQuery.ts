@@ -1,7 +1,7 @@
 import axios from "axios";
-import Cookies from "js-cookie";
-import { api } from "./clientConfig";
 import { toast } from "sonner";
+import { api } from "./clientConfig";
+import { getToken } from "../hooks/useToken";
 
 type LoginPayload = {
   login_type: string;
@@ -24,12 +24,12 @@ export class UserLoginError extends Error {
 }
 
 export const userLogin = async (login: string, password: string) => {
+  const token = getToken();
   const payload: LoginPayload = {
     login_type: "email",
     login_value: login,
     password,
   };
-  const token = Cookies.get("carecloud_token");
 
   try {
     const res = await api.post<LoginResponse>(

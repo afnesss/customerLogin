@@ -5,10 +5,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import Cookies from "js-cookie";
 import type { User } from "../types/customerDto";
 import { getUserData } from "../api/getUserData";
 import { logoutQuery } from "../api/logoutQuery";
+import { useTokenHook } from "../hooks/useToken";
 
 type AuthContextValue = {
   user: User | null;
@@ -24,6 +24,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const { token, removeToken } = useTokenHook();
 
   const refreshUser = async () => {
     const data = await getUserData();
@@ -37,14 +38,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // ignore logout API failure and still clear local auth state
     } finally {
       setUser(null);
-      Cookies.remove("carecloud_token", { path: "/" });
+      removeToken();
     }
   };
 
   useEffect(() => {
     const bootstrap = async () => {
       try {
-        if (!Cookies.get("carecloud_token")) {
+        if (!token) {
           setUser(null);
           return;
         }

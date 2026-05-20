@@ -1,10 +1,10 @@
 import { Alert, Button, Card, Form, Input, Space, Typography } from "antd";
-import Cookies from "js-cookie";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserLoginError, userLogin } from "../api/loginQuery";
 import { createTokenId } from "../api/tokenQuery";
 import { useAuth } from "../context/AuthContext";
+import { useTokenHook } from "../hooks/useToken";
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -13,6 +13,7 @@ const LoginForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreparingToken, setIsPreparingToken] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const { token } = useTokenHook();
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
 
@@ -21,7 +22,7 @@ const LoginForm = () => {
       setIsSubmitting(true);
       setSubmitError(null);
 
-      if (!Cookies.get("carecloud_token")) {
+      if (!token) {
         try {
           setIsPreparingToken(true);
           await createTokenId();

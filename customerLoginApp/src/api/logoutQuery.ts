@@ -1,11 +1,11 @@
 import axios from "axios";
-import Cookies from "js-cookie";
-import { api } from "./clientConfig";
 import { toast } from "sonner";
+import { getToken } from "../hooks/useToken";
+import { api } from "./clientConfig";
 
 export const logoutQuery = async () => {
   try {
-    const token = Cookies.get("carecloud_token");
+    const token = getToken();
 
     if (!token) {
       return null;
@@ -23,7 +23,8 @@ export const logoutQuery = async () => {
     return response.data;
   } catch (error) {
     const message = axios.isAxiosError(error)
-      ? (error.response?.data?.error?.title ?? "Logout failed. Please try again.")
+      ? (error.response?.data?.error?.title ??
+        "Logout failed. Please try again.")
       : "Logout failed. Please try again.";
     toast.error(message);
   }
