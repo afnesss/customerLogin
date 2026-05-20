@@ -29,7 +29,6 @@ export const createTokenId = async () => {
           allowed_gps: true,
           allowed_notifications: false,
         },
-        external_application_id: import.meta.env.VITE_EXTERNAL_APP_ID,
       });
       console.log(response.data);
       const token = response.data.data.token_id;
