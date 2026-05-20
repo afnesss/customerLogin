@@ -1,0 +1,11 @@
+RewriteEngine On
+
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Route /api/* to api/index.php
+RewriteRule ^api/(.*)$ api/index.php [L,QSA]
+
+# SPA - все інше на index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]

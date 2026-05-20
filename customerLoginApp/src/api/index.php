@@ -13,6 +13,11 @@ if (strpos($path, '/tokens') !== false) {
 }
 $body_json = json_encode($body);
 $headers = getallheaders();
+$auth = $headers['Authorization']
+    ?? $_SERVER['HTTP_AUTHORIZATION']
+    ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+    ?? '';
+
 $ch = curl_init($full_url);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -20,7 +25,7 @@ curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $body_json);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Authorization: ' . ($headers['Authorization'] ?? '')
+    'Authorization: ' . $auth
 ]);
 
 $response = curl_exec($ch);

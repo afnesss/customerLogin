@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { data: user, isLoading } = useUserData();
 
   const refreshUser = async () => {
-    await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+    await queryClient.refetchQueries({ queryKey: USER_QUERY_KEY });
   };
 
   const logout = async () => {
