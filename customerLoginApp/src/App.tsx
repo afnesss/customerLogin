@@ -1,3 +1,4 @@
+import { Spin } from "antd";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import LoginForm from "./pages/LoginForm";
@@ -18,7 +19,11 @@ function App() {
   const { isAuthenticated, isBootstrapping } = useAuth();
 
   if (isBootstrapping) {
-    return <div>Loading...</div>;
+    return (
+      <main className="flex min-h-screen items-center justify-center">
+        <Spin size="large" />
+      </main>
+    );
   }
 
   return (

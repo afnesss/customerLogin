@@ -1,3 +1,4 @@
+import axios from "axios";
 import { api } from "../clientConfig";
 import type { User } from "../../types/customerDto";
 import { useQuery } from "@tanstack/react-query";
@@ -31,4 +32,8 @@ export const useUserData = () =>
     select: (data) => data.data.customers[0] ?? null,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
+    retry: (failureCount, error) => {
+      if (axios.isAxiosError(error) && error.response?.status === 401) return false;
+      return failureCount < 3;
+    },
   });
