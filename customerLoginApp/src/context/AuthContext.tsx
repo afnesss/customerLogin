@@ -6,8 +6,8 @@ import {
   type ReactNode,
 } from "react";
 import type { User } from "../types/customerDto";
-import { getUserData } from "../api/getUserData";
-import { logoutQuery } from "../api/logoutQuery";
+import { getUserData } from "../api/user/getUserData";
+import { logoutQuery } from "../api/user/logoutQuery";
 import { useTokenHook } from "../hooks/useToken";
 
 type AuthContextValue = {

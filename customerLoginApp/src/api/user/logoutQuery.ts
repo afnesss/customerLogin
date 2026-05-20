@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "sonner";
-import { getToken } from "../hooks/useToken";
-import { api } from "./clientConfig";
+import { getToken } from "../../hooks/useToken";
+import { api } from "../clientConfig";
 
 export const logoutQuery = async () => {
   try {

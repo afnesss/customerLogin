@@ -2,7 +2,7 @@ import { Form, Row } from "antd";
 import axios from "axios";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { updateUser } from "../api/updateUserQuery";
+import { updateUser } from "../api/user/updateUserQuery";
 import ProfileEmptyState from "../components/ProfilePage/ProfileEmptyState";
 import AgreementsSection from "../components/ProfilePage/sections/AgreementsSection";
 import PersonalInformationSection from "../components/ProfilePage/sections/PersonalInformationSection";
@@ -113,16 +113,21 @@ const ProfilePage = () => {
       toast.success("Profile updated");
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const invalidParams = error.response?.data?.error?.error_data?.invalid_params;
+        const invalidParams =
+          error.response?.data?.error?.error_data?.invalid_params;
         if (invalidParams?.length > 0) {
           profileForm.setFields(
-            invalidParams.map(({ name, message }: { name: string; message: string }) => ({
-              name,
-              errors: [message],
-            })),
+            invalidParams.map(
+              ({ name, message }: { name: string; message: string }) => ({
+                name,
+                errors: [message],
+              }),
+            ),
           );
         } else {
-          toast.error(error.response?.data?.error?.title ?? "Failed to update profile");
+          toast.error(
+            error.response?.data?.error?.title ?? "Failed to update profile",
+          );
         }
       } else {
         toast.error("Failed to update profile");

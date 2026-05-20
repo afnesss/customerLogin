@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "sonner";
-import { api } from "./clientConfig";
-import { getToken } from "../hooks/useToken";
+import { api } from "../clientConfig";
+import { getToken } from "../../hooks/useToken";
 
 type LoginPayload = {
   login_type: string;

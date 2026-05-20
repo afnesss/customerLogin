@@ -1,7 +1,7 @@
 import { Alert, Button, Card, Form, Input, Space, Typography } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserLoginError, userLogin } from "../api/loginQuery";
+import { UserLoginError, userLogin } from "../api/user/loginQuery";
 import { createTokenId } from "../api/tokenQuery";
 import { useAuth } from "../context/AuthContext";
 import { useTokenHook } from "../hooks/useToken";
