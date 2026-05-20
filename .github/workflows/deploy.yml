@@ -17,6 +17,7 @@ jobs:
           node-version: 22
       - name: Install and build
         run: |
+          npm install
           npm ci
           npm run build
           cp .htaccess dist/.htaccess
