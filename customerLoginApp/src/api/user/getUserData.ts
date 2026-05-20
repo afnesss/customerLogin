@@ -11,10 +11,14 @@ export type GetUserDataResponse = {
 };
 
 export const getUserData = async () => {
-  const response = await api.get<GetUserDataResponse>("/customers");
-  console.log(response.data);
+  try {
+    const response = await api.get<GetUserDataResponse>("/customers");
+    console.log(response.data);
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const USER_QUERY_KEY = ["user"] as const;

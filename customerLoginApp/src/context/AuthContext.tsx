@@ -6,7 +6,7 @@ import type { User } from "../types/customerDto";
 import { USER_QUERY_KEY, useUserData } from "../api/user/getUserData";
 
 type AuthContextValue = {
-  user: User | undefined;
+  user: User | null;
   isAuthenticated: boolean;
   isBootstrapping: boolean;
   logout: () => Promise<void>;
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: user ?? null,
         isAuthenticated: Boolean(token) && Boolean(user),
         isBootstrapping: isLoading,
         logout,

@@ -1,8 +1,6 @@
 import { Form, Row } from "antd";
-import axios from "axios";
-import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { updateUser } from "../api/user/updateUserQuery";
+import { useUpdateUserData } from "../api/user/updateUserQuery";
 import ProfileEmptyState from "../components/ProfilePage/ProfileEmptyState";
 import AgreementsSection from "../components/ProfilePage/sections/AgreementsSection";
 import PersonalInformationSection from "../components/ProfilePage/sections/PersonalInformationSection";
@@ -31,10 +29,15 @@ const cardClassName =
   "rounded-3xl! border-white/70! bg-white/90! shadow-lg! backdrop-blur mb-5!";
 
 const ProfilePage = () => {
-  const { user, logout, setUser } = useAuth();
+  const { user, logout } = useAuth();
   const [profileForm] = Form.useForm<ProfileFormValues>();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  const { mutateAsync, isPending: isSavingProfile } = useUpdateUserData({
+    user,
+    setIsEditingProfile,
+    profileForm,
+  });
 
   useEffect(() => {
     if (!user) {
@@ -52,7 +55,11 @@ const ProfilePage = () => {
     );
   }
 
-  const { customer_id, last_change, personal_information } = user as User;
+  const {
+    customer_id: customerId,
+    last_change,
+    personal_information,
+  } = user as User;
   const { agreement } = personal_information;
   const handleLogout = () => {
     void logout();
@@ -63,22 +70,24 @@ const ProfilePage = () => {
     setIsEditingProfile(false);
   };
 
-  const saveProfile = async (
-    nextPersonalInformation: CustomerPersonalInformation,
-  ) => {
-    await updateUser(customer_id, nextPersonalInformation);
-    setUser({
-      ...user,
-      personal_information: nextPersonalInformation,
-      last_change: new Date().toISOString(),
-    });
-  };
-
   const handleSaveProfile = async (values: ProfileFormValues) => {
-    setIsSavingProfile(true);
-
-    try {
-      const {
+    const {
+      address1,
+      address2,
+      address3,
+      address4,
+      address5,
+      address6,
+      address7,
+      zip,
+      city,
+      country_code,
+      ...nextPersonalValues
+    } = values;
+    const nextPersonalInformation: CustomerPersonalInformation = {
+      ...personal_information,
+      ...nextPersonalValues,
+      address: {
         address1,
         address2,
         address3,
@@ -89,52 +98,10 @@ const ProfilePage = () => {
         zip,
         city,
         country_code,
-        ...nextPersonalValues
-      } = values;
-      const nextPersonalInformation: CustomerPersonalInformation = {
-        ...personal_information,
-        ...nextPersonalValues,
-        address: {
-          address1,
-          address2,
-          address3,
-          address4,
-          address5,
-          address6,
-          address7,
-          zip,
-          city,
-          country_code,
-        },
-      };
+      },
+    };
 
-      await saveProfile(nextPersonalInformation);
-      setIsEditingProfile(false);
-      toast.success("Profile updated");
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const invalidParams =
-          error.response?.data?.error?.error_data?.invalid_params;
-        if (invalidParams?.length > 0) {
-          profileForm.setFields(
-            invalidParams.map(
-              ({ name, message }: { name: string; message: string }) => ({
-                name,
-                errors: [message],
-              }),
-            ),
-          );
-        } else {
-          toast.error(
-            error.response?.data?.error?.title ?? "Failed to update profile",
-          );
-        }
-      } else {
-        toast.error("Failed to update profile");
-      }
-    } finally {
-      setIsSavingProfile(false);
-    }
+    await mutateAsync({ customerId, personalInfo: nextPersonalInformation });
   };
 
   return (
