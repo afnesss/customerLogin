@@ -29,4 +29,6 @@ export const useUserData = () =>
     queryFn: getUserData,
     enabled: Boolean(getToken()),
     select: (data) => data.data.customers[0] ?? null,
+    refetchInterval: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
