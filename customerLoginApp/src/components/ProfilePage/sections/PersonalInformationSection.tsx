@@ -9,6 +9,7 @@ import {
   Space,
   Typography,
 } from "antd";
+import type { Rule } from "antd/es/form";
 import {
   Calendar,
   Camera,
@@ -22,8 +23,10 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useLanguagesData } from "../../../api/languages/getLanguages";
 import type { CustomerPersonalInformation } from "../../../types/customerDto";
+import type { ProfileFormValues } from "../../../types/profileFormTypes";
 import { getCountryLabel } from "../../../utils/countryOptions";
 import {
   formatDate,
@@ -31,11 +34,9 @@ import {
   formatLanguage,
   formatPhone,
 } from "../../../utils/heplerFunctions";
-import type { ProfileFormValues } from "../../../types/profileFormTypes";
-import AddressEditor from "./AddressEditor";
-import type { Rule } from "antd/es/form";
 import { SectionLabel } from "../../SectionLabel";
 import { FieldRow } from "../FieldRow";
+import AddressEditor from "./AddressEditor";
 
 const { Text, Title } = Typography;
 
@@ -125,6 +126,7 @@ const PersonalInformationSection = ({
 }: PersonalInformationSectionProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const { data: languages, isLoading } = useLanguagesData();
 
   useEffect(() => {
     if (!isEditing) setPhotoPreview(null);
@@ -167,6 +169,20 @@ const PersonalInformationSection = ({
       displayValue: formatLanguage(personalInformation.language_id),
       fieldName: "language_id" as const,
       rules: undefined,
+      control: (
+        <Select
+          options={
+            isLoading
+              ? [{ label: "Loading..", value: "" }]
+              : languages?.map((i) => ({
+                  label: i.language_id,
+                  value: i.language_id,
+                }))
+          }
+          size="middle"
+          className="w-full rounded-xl!"
+        />
+      ),
     },
   ].filter((item) => isEditing || (item.value && item.value.trim() !== ""));
 
@@ -318,10 +334,14 @@ const PersonalInformationSection = ({
                             rules={item.rules}
                             className="mb-0!"
                           >
-                            <Input
-                              size="middle"
-                              className="rounded-xl! shadow-none!"
-                            />
+                            {"control" in item && item.control ? (
+                              item.control
+                            ) : (
+                              <Input
+                                size="middle"
+                                className="rounded-xl! shadow-none!"
+                              />
+                            )}
                           </Form.Item>
                         ) : (
                           <Text className="break-all text-slate-900!">
