@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "sonner";
-import { getToken } from "../hooks/useToken";
+import { getToken, removeToken } from "../hooks/useToken";
 
 export const api = axios.create({
   baseURL: `/api`,
@@ -28,6 +28,7 @@ api.interceptors.response.use(
       const errorMessage = error.response.data.message || "An error occurred";
 
       if (statusCode === 401) {
+        removeToken();
         toast.error("Unauthorized access");
       } else if (statusCode === 403) {
         toast.error("Forbidden");
