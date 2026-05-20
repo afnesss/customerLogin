@@ -1,5 +1,7 @@
 import { api } from "../clientConfig";
 import type { User } from "../../types/customerDto";
+import { useQuery } from "@tanstack/react-query";
+import { getToken } from "../../hooks/useToken";
 
 export type GetUserDataResponse = {
   data: {
@@ -14,3 +16,13 @@ export const getUserData = async () => {
 
   return response.data;
 };
+
+export const USER_QUERY_KEY = ["user"] as const;
+
+export const useUserData = () =>
+  useQuery({
+    queryKey: USER_QUERY_KEY,
+    queryFn: getUserData,
+    enabled: Boolean(getToken()),
+    select: (data) => data.data.customers[0] ?? null,
+  });

@@ -1,20 +1,14 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
-import type { User } from "../types/customerDto";
-import { getUserData } from "../api/user/getUserData";
+import { useQueryClient } from "@tanstack/react-query";
+import { createContext, useContext, type ReactNode } from "react";
 import { logoutQuery } from "../api/user/logoutQuery";
-import { useTokenHook } from "../hooks/useToken";
+import { removeToken, useTokenHook } from "../hooks/useToken";
+import type { User } from "../types/customerDto";
+import { USER_QUERY_KEY, useUserData } from "../api/user/getUserData";
 
 type AuthContextValue = {
-  user: User | null;
+  user: User | undefined;
   isAuthenticated: boolean;
   isBootstrapping: boolean;
-  setUser: (user: User | null) => void;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 };
@@ -22,13 +16,12 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isBootstrapping, setIsBootstrapping] = useState(true);
-  const { token, removeToken } = useTokenHook();
+  const { token } = useTokenHook();
+  const queryClient = useQueryClient();
+  const { data: user, isLoading } = useUserData();
 
   const refreshUser = async () => {
-    const data = await getUserData();
-    setUser(data.data.customers[0] ?? null);
+    await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
   };
 
   const logout = async () => {
@@ -37,37 +30,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // ignore logout API failure and still clear local auth state
     } finally {
-      setUser(null);
       removeToken();
+      queryClient.removeQueries({ queryKey: USER_QUERY_KEY });
     }
   };
-
-  useEffect(() => {
-    const bootstrap = async () => {
-      try {
-        if (!token) {
-          setUser(null);
-          return;
-        }
-
-        await refreshUser();
-      } catch {
-        setUser(null);
-      } finally {
-        setIsBootstrapping(false);
-      }
-    };
-
-    void bootstrap();
-  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: Boolean(user),
-        isBootstrapping,
-        setUser,
+        isAuthenticated: Boolean(token) && Boolean(user),
+        isBootstrapping: isLoading,
         logout,
         refreshUser,
       }}
