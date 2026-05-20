@@ -18,7 +18,6 @@ jobs:
       - name: Install and build
         run: |
           npm install
-          npm ci
           npm run build
           cp .htaccess dist/.htaccess
           mkdir -p dist/api
@@ -31,3 +30,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
+          server-dir: ./test
