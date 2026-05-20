@@ -18,6 +18,7 @@ export const updateUser = async (
     customer: {
       personal_information: {
         ...personalInfo,
+        salutation: undefined,
         address: {
           ...personalInfo.address,
           country_code: personalInfo.address.country_code?.toLowerCase(),

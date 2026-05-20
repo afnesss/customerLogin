@@ -50,8 +50,8 @@ type PersonalEditField = {
 
 const genderOptions = [
   { label: "Not specified", value: 0 },
-  { label: "Female", value: 1 },
-  { label: "Male", value: 2 },
+  { label: "Female", value: 2 },
+  { label: "Male", value: 1 },
 ];
 
 const personalEditFields: PersonalEditField[] = [

@@ -15,11 +15,11 @@ export const formatAgreementValue = (value: number) => {
 
 export const formatGenderValue = (value: number) => {
   if (value === 2) {
-    return "Male";
+    return "Female";
   }
 
   if (value === 1) {
-    return "Female";
+    return "Male";
   }
 
   return "Not specified";
