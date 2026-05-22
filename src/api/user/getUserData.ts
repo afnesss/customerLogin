@@ -24,16 +24,18 @@ export const getUserData = async () => {
 
 export const USER_QUERY_KEY = ["user"] as const;
 
-export const useUserData = () =>
-  useQuery({
+export const useUserData = (isAuthenticated: boolean) => {
+  return useQuery({
     queryKey: USER_QUERY_KEY,
     queryFn: getUserData,
-    enabled: Boolean(getToken()),
+    enabled: isAuthenticated,
     select: (data) => data.data.customers[0] ?? null,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
     retry: (failureCount, error) => {
-      if (axios.isAxiosError(error) && error.response?.status === 401) return false;
+      if (axios.isAxiosError(error) && error.response?.status === 401)
+        return false;
       return failureCount < 3;
     },
   });
+};

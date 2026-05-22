@@ -1,12 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createContext, useContext, type ReactNode } from "react";
-import { logoutQuery } from "../api/user/logoutQuery";
-import { removeToken, useTokenHook } from "../hooks/useToken";
-import type { User } from "../types/customerDto";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { USER_QUERY_KEY, useUserData } from "../api/user/getUserData";
+import { userLogin } from "../api/user/loginQuery";
+import { logoutQuery } from "../api/user/logoutQuery";
+import { removeToken } from "../hooks/useToken";
+import type { User } from "../types/customerDto";
 
 type AuthContextValue = {
   user: User | null;
+  login: (email: string, password: string) => Promise<void>;
   isAuthenticated: boolean;
   isBootstrapping: boolean;
   logout: () => Promise<void>;
@@ -16,17 +18,25 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { token } = useTokenHook();
   const queryClient = useQueryClient();
-  const { data: user, isLoading } = useUserData();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { data: user, isLoading } = useUserData(isLoggedIn);
 
   const refreshUser = async () => {
     await queryClient.refetchQueries({ queryKey: USER_QUERY_KEY });
   };
 
+  const login = async (email: string, password: string) => {
+    await userLogin(email, password);
+    await refreshUser();
+    setIsLoggedIn(true);
+  };
+
   const logout = async () => {
     try {
       await logoutQuery();
+      setIsLoggedIn(false);
     } catch {
       // ignore logout API failure and still clear local auth state
     } finally {
@@ -39,7 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user: user ?? null,
-        isAuthenticated: Boolean(token) && Boolean(user),
+        login,
+        isAuthenticated: isLoggedIn,
         isBootstrapping: isLoading,
         logout,
         refreshUser,

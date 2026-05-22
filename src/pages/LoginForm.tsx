@@ -1,8 +1,8 @@
 import { Alert, Button, Card, Form, Input, Space, Typography } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserLoginError, userLogin } from "../api/user/loginQuery";
 import { createTokenId } from "../api/tokenQuery";
+import { UserLoginError } from "../api/user/loginQuery";
 import { useAuth } from "../context/AuthContext";
 import { useTokenHook } from "../hooks/useToken";
 
@@ -15,7 +15,7 @@ const LoginForm = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const { token } = useTokenHook();
   const navigate = useNavigate();
-  const { refreshUser } = useAuth();
+  const { refreshUser, login } = useAuth();
 
   const handleSubmit = async (values: { email: string; password: string }) => {
     try {
@@ -31,7 +31,7 @@ const LoginForm = () => {
         }
       }
 
-      await userLogin(values.email, values.password);
+      await login(values.email, values.password);
       await refreshUser();
       navigate("/profile", { replace: true });
     } catch (error) {
