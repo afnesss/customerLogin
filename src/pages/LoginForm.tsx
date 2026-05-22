@@ -1,5 +1,5 @@
 import { Alert, Button, Card, Form, Input, Space, Typography } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createTokenId } from "../api/tokenQuery";
 import { UserLoginError } from "../api/user/loginQuery";
@@ -17,6 +17,16 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { refreshUser, login } = useAuth();
 
+  useEffect(() => {
+    const createToken = async () => {
+      try {
+        await createTokenId();
+      } finally {
+      }
+    };
+    createToken();
+  }, []);
+
   const handleSubmit = async (values: { email: string; password: string }) => {
     try {
       setIsSubmitting(true);
@@ -26,6 +36,10 @@ const LoginForm = () => {
         try {
           setIsPreparingToken(true);
           await createTokenId();
+        } catch (error) {
+          setSubmitError(
+            error instanceof Error ? error.message : "Failed to prepare token",
+          );
         } finally {
           setIsPreparingToken(false);
         }

@@ -36,9 +36,8 @@ export const createTokenId = async () => {
 
       return token;
     } catch (error) {
-      console.log("get token error: ", error);
       removeToken();
-      return null;
+      throw error;
     } finally {
       createTokenPromise = null;
     }
