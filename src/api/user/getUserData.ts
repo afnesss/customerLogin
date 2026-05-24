@@ -2,7 +2,6 @@ import axios from "axios";
 import { api } from "../clientConfig";
 import type { User } from "../../types/customerDto";
 import { useQuery } from "@tanstack/react-query";
-import { getToken } from "../../hooks/useToken";
 
 export type GetUserDataResponse = {
   data: {
